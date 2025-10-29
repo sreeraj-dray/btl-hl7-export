@@ -1,0 +1,60 @@
+<btlHl7Config>
+ <!-- Warning : Do not modify the id= numbers below -->
+
+  <!-- ======================================================================================================================-->
+  <!-- ======================================================================================================================-->
+ 
+ <!-- Configuration for Hl7 Worklist START -->
+  <btlHl7WlConfig>
+    <!-- Server connection details -->
+    <ConfigItem id="1" name="ServerIP">127.0.0.1</ConfigItem> <!-- Do not change this (is ignored, but must be valid IP addr -->
+    <ConfigItem id="2" name="ServerPort">23726</ConfigItem>  <!-- This is the filter to match in order message OBR segment -->
+    <ConfigItem id="3" name="ServerTimeout">20000</ConfigItem> <!-- In milliseconds. Must be more than 3000 ms -->
+
+    <!-- Worklist behavior -->
+    <ConfigItem id="4" name="OrderType">ECG</ConfigItem> <!-- This is the filter to match in order message OBR segment -->
+    <ConfigItem id="5" name="OrderLimit">200</ConfigItem>
+       <!-- HL7 MSH Header Fields -->
+    <ConfigItem id="6" name="SendingApplication" NamespaceID="WlSendApp_Xml_1" UniversalID="WlSendApp_Xml_2"/>   <!-- Own Application -->
+    <ConfigItem id="7" name="SendingFacility" NamespaceID="WlSendFac_Xml_1" UniversalID="WlSendFac_Xml_2"/> 	 <!-- Own Facility -->
+    <ConfigItem id="8" name="ReceivingApplication" NamespaceID="WlRecvApp_Xml_1" UniversalID="WlRecvApp_Xml_2"/> <!-- HIS Application -->
+    <ConfigItem id="9" name="ReceivingFacility" NamespaceID="WlRecvFac_Xml_1" UniversalID="WlRecvFac_Xml_2"/>    <!-- HIS Facility -->
+
+    <!-- Logging DebugLevel: 0=disable all 2=Errors only, 16=Brief, 32=Details, 18= Errors+Brief, 50=All -->
+    <ConfigItem id="10" name="DebugLevel">18</ConfigItem>
+  </btlHl7WlConfig>
+  <!-- Configuration for Hl7 Worklist END -->
+  
+  <!-- ======================================================================================================================-->
+  <!-- ======================================================================================================================-->
+  
+  <!-- Configuration for Hl7 Export START -->
+  <btlHl7PdfExportConfig>
+     
+    <!-- Server connection details -->
+    <ConfigItem id="1" name="ServerIP">127.0.0.1</ConfigItem>
+    <ConfigItem id="2" name="ServerPort">23856</ConfigItem>
+    <ConfigItem id="3" name="ServerTimeoutSeconds">30</ConfigItem> <!-- Must be more than 3 -->
+
+    <!-- Max no of bytes per TCP send call -->
+    <ConfigItem id="4" name="PdfChunkSize">4096</ConfigItem>   <!-- Must be between 512 and 48000 (both inclusive) -->
+    <ConfigItem id="5" name="AckTimeoutSeconds">20</ConfigItem>  <!-- Must be more than 3 -->
+    <!-- Logging DebugLevel: 0=disable all 2=Errors only, 16=Brief, 32=Details, 18= Errors+Brief, 50=All -->    
+    <ConfigItem id="6" name="DebugLevel">50</ConfigItem>
+
+    <!-- HL7 Header Fields -->
+    <!--ConfigItem id="7" name="SendingApplication" NamespaceID="ExpSendApp_Xml_1" UniversalID="ExpSendApp_Xml_2"/-->
+    <ConfigItem id="7" name="SendingApplication" NamespaceID="ExpSendApp_Xml_1" UniversalID=""/>    
+    <ConfigItem id="8" name="SendingFacility" NamespaceID="ExpSendFac_Xml_1" UniversalID="ExpSendFac_Xml_2"/>
+    <ConfigItem id="9" name="ReceivingApplication" NamespaceID="HIS_ExpRecvApp_Xml_1" UniversalID="HIS_ExpRecvApp_Xml_2"/>
+    <ConfigItem id="10" name="ReceivingFacility" NamespaceID="ExpRecvFac_Xml_1" UniversalID="ExpRecvFac_Xml_2"/>
+	<!-- Other Hl7 Message generation controls -->
+	<ConfigItem id="11" name="UseSeperateObxEcgMeas">Yes</ConfigItem>  <!-- Yes or No, Yes will send each measurment in its own OBX segment -->
+	<ConfigItem id="12" name="ObxResultStatus">F</ConfigItem>  <!-- OBX.11: P = Preliminary, F = Final, C = Corrected -->
+	
+	
+
+  </btlHl7PdfExportConfig>
+ <!-- Configuration for Hl7 Export END -->
+
+</btlHl7Config>

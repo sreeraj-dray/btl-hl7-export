@@ -1,0 +1,919 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BtlXmlNg version="1.0.3">
+  <header>
+    <hardware category="ecg" model="BTL 8 Elite" serialNumber="dinesh-0782-"/>
+    <software name="ECG2" version="1.dinesh-2023-12-05T21:12:22+05:30"/>
+    <createdDatetime>2023-12-06T15:00:10</createdDatetime>
+  </header>
+  <users>
+    <user guid="{b5ca9896-6023-4673-98b0-694058729f5d}" type="unknown">
+      <firstName/>
+      <surname>admin</surname>
+    </user>
+  </users>
+  <patients>
+    <patient guid="{d4dcafbc-a8a8-42fd-aea2-43ac2600f348}" type="regular" demo="true">
+      <firstName/>
+      <surname>Auto</surname>
+      <titleBefore/>
+      <externalId origin="HIS"/>
+      <classification>European</classification>
+    </patient>
+  </patients>
+  <examinations>
+    <examination guid="{e824f0f3-5636-4e2f-ae40-e093236af11a}" patientGuid="{d4dcafbc-a8a8-42fd-aea2-43ac2600f348}" type="EcgRest" demo="true">
+      <patientSnapshot>
+        <classification>European</classification>
+      </patientSnapshot>
+      <acquisition>
+        <sourceDevice model="BTL 8 Elite" revision="Desktop-100" swVersion="1.dinesh-2023-12-05T" serialNumber="dinesh-0782-">
+          <ecgDevice>
+            <profile>ACable_12leads</profile>
+          </ecgDevice>
+        </sourceDevice>
+        <rawData guid="{36845bbb-b4da-4041-b494-41babf1aa7e5}">
+          <container format="Bebi" fileName="79c3fdec-1dbb-492e-b086-f298f6fe1e15.raw.bebi"/>
+        </rawData>
+        <acquisitor userGuid="{b5ca9896-6023-4673-98b0-694058729f5d}"/>
+      </acquisition>
+      <analysis rawDataGuid="{36845bbb-b4da-4041-b494-41babf1aa7e5}">
+        <analysers>
+          <analyser module="EcgDiag" version="7.0.5.200"/>
+        </analysers>
+        <properties>
+          <property name="stripRange">
+            <start>5000</start>
+            <length>10000</length>
+          </property>
+          <property name="viewChannels">
+            <channel name="I"/>
+            <channel name="II"/>
+            <channel name="III"/>
+            <channel name="aVR"/>
+            <channel name="aVL"/>
+            <channel name="aVF"/>
+            <channel name="V1"/>
+            <channel name="V2"/>
+            <channel name="V3"/>
+            <channel name="V4"/>
+            <channel name="V5"/>
+            <channel name="V6"/>
+          </property>
+          <property name="signalSpeed">25.00</property>
+          <property name="signalSensitivity">10.00</property>
+          <property name="halfSensitivity">false</property>
+          <property name="defaultRhythmChannel">II</property>
+          <property name="leadsLayoutType">LT_1page_2x6leads_plus_1rhythm</property>
+          <property name="qtcMethod">Bazett</property>
+          <property name="leadsOrder">Einthoven</property>
+        </properties>
+        <diagnosticStep name="averageBeat">
+          <processedData>
+            <container format="Bebi" fileName="76aa6bf6-eedd-45ef-9d4b-83919c45a44a.avgbeats.bebi"/>
+          </processedData>
+          <eventTable type="BeatAverage">
+            <event start="2500" length="5000" position="200">
+              <measurements>
+                <measurement code="LVH_Romhilt_points">0</measurement>
+                <measurement code="LVH_Cornell_mm">Undetectable</measurement>
+                <measurement code="LVH_Sokolow_mm">15</measurement>
+                <measurement code="NoiseLevel_num">13</measurement>
+                <measurement code="Prematurity_num">Unknown</measurement>
+                <measurement code="PQ_Position_05ms">-136</measurement>
+                <measurement code="R_Position_05ms">Unknown</measurement>
+                <measurement code="P_TimeOn_05ms">-400</measurement>
+                <measurement code="P_TimeOff_05ms">-228</measurement>
+                <measurement code="QRS_TimeOn_05ms">-72</measurement>
+                <measurement code="QRS_TimeOff_05ms">44</measurement>
+                <measurement code="T_TimeOff_05ms">678</measurement>
+                <measurement code="P_Axis_deg">48</measurement>
+                <measurement code="QRS_Axis_deg">56</measurement>
+                <measurement code="T_Axis_deg">59</measurement>
+                <measurement code="vpAvgBeatValid_Mask">0</measurement>
+                <measurement code="ST_BasePosition_05ms">-136</measurement>
+                <measurement code="J_PlusPosition_05ms">204</measurement>
+                <measurement code="J_Position_05ms">44</measurement>
+                <measurement code="BSA_Group_Typic">Unknown</measurement>
+              </measurements>
+              <measurements channel="I">
+                <measurement code="QRS_TimeOffCh_05ms">0</measurement>
+                <measurement code="P_TimeBiPhasicCrossingCh_05ms">NotPresent</measurement>
+                <measurement code="T_TimeOffCh_05ms">678</measurement>
+                <measurement code="Isoline_correction_uV">Unknown</measurement>
+                <measurement code="S_TimeOnCh_05ms">Unknown</measurement>
+                <measurement code="R2_TimeOnCh_05ms">Unknown</measurement>
+                <measurement code="R_TimeOnCh_05ms">Unknown</measurement>
+                <measurement code="Q_TimeOnCh_05ms">-76</measurement>
+                <measurement code="QRS_TimeOnCh_05ms">-72</measurement>
+                <measurement code="P_TimeOffCh_05ms">-228</measurement>
+                <measurement code="P_TimeOnCh_05ms">-400</measurement>
+                <measurement code="QRS_width200uV">144</measurement>
+                <measurement code="QRS_MaxAmplitude">675</measurement>
+                <measurement code="Negative_QRSDelta">-75</measurement>
+                <measurement code="Positive_QRSDelta">653</measurement>
+                <measurement code="RS_Notched_uV">Unknown</measurement>
+                <measurement code="DeltaWave_num">Undetectable</measurement>
+                <measurement code="P_PlusMaxPosition_05ms">-316</measurement>
+                <measurement code="P_MinusMaxPosition_05ms">NotPresent</measurement>
+                <measurement code="T_AreaPositive_uV05ms">158</measurement>
+                <measurement code="ST_PointAdaptive_uV">270</measurement>
+                <measurement code="J_Amplitude_uV">314</measurement>
+                <measurement code="T_MinusAmplitude_uV">110</measurement>
+                <measurement code="S_Duration_05ms">NotPresent</measurement>
+                <measurement code="S_MaxPosition_05ms">NotPresent</measurement>
+                <measurement code="S_Amplitude_uV">NotPresent</measurement>
+                <measurement code="T_PlusAmplitude_uV">NotPresent</measurement>
+                <measurement code="R_Duration_05ms">60</measurement>
+                <measurement code="R_PeakTime_05ms">NotPresent</measurement>
+                <measurement code="R2_Amplitude_uV">NotPresent</measurement>
+                <measurement code="R1_Amplitude_uV">NotPresent</measurement>
+                <measurement code="R0_Amplitude_uV">589</measurement>
+                <measurement code="S2_Amplitude_uV">NotPresent</measurement>
+                <measurement code="Q_Duration_05ms">44</measurement>
+                <measurement code="R2_Duration_05ms">NotPresent</measurement>
+                <measurement code="Q_Amplitude_uV">-86</measurement>
+                <measurement code="P_MinusAmplitude_uV">NotPresent</measurement>
+                <measurement code="P_PlusAmplitude_uV">111</measurement>
+                <measurement code="ST_Slope_slope">-11</measurement>
+                <measurement code="Q_Position_05ms">-40</measurement>
+                <measurement code="R0_MaxPosition_05ms">8</measurement>
+                <measurement code="R1_MaxPosition_05ms">NotPresent</measurement>
+                <measurement code="R2_MaxPosition_05ms">NotPresent</measurement>
+                <measurement code="S2_MaxPosition_05ms">NotPresent</measurement>
+                <measurement code="S2_Duration_05ms">NotPresent</measurement>
+                <measurement code="ST_Area_uV05ms">294</measurement>
+                <measurement code="T_MinusMaxPosition_05ms">452</measurement>
+                <measurement code="T_AreaNegative_uV05ms">0</measurement>
+                <measurement code="T_PlusMaxPosition_05ms">NotPresent</measurement>
+              </measurements>
+              <measurements channel="II">
+                <measurement code="QRS_TimeOffCh_05ms">0</measurement>
+                <measurement code="P_TimeBiPhasicCrossingCh_05ms">NotPresent</measurement>
+                <measurement code="T_TimeOffCh_05ms">678</measurement>
+                <measurement code="Isoline_correction_uV">Unknown</measurement>
+                <measurement code="S_TimeOnCh_05ms">Unknown</measurement>
+                <measurement code="R2_TimeOnCh_05ms">Unknown</measurement>
+                <measurement code="R_TimeOnCh_05ms">Unknown</measurement>
+                <measurement code="Q_TimeOnCh_05ms">-76</measurement>
+                <measurement code="QRS_TimeOnCh_05ms">-72</measurement>
+                <measurement code="P_TimeOffCh_05ms">-232</measurement>
+                <measurement code="P_TimeOnCh_05ms">-400</measurement>
+                <measurement code="QRS_width200uV">148</measurement>
+                <measurement code="QRS_MaxAmplitude">1054</measurement>
+                <measurement code="Negative_QRSDelta">-55</measurement>
+                <measurement code="Positive_QRSDelta">1036</measurement>
+                <measurement code="RS_Notched_uV">Unknown</measurement>
+                <measurement code="DeltaWave_num">Undetectable</measurement>
+                <measurement code="P_PlusMaxPosition_05ms">-316</measurement>
+                <measurement code="P_MinusMaxPosition_05ms">NotPresent</measurement>
+                <measurement code="T_AreaPositive_uV05ms">283</measurement>
+                <measurement code="ST_PointAdaptive_uV">525</measurement>
+                <measurement code="J_Amplitude_uV">592</measurement>
+                <measurement code="T_MinusAmplitude_uV">213</measurement>
+                <measurement code="S_Duration_05ms">NotPresent</measurement>
+                <measurement code="S_MaxPosition_05ms">NotPresent</measurement>
+                <measurement code="S_Amplitude_uV">NotPresent</measurement>
+                <measurement code="T_PlusAmplitude_uV">NotPresent</measurement>
+                <measurement code="R_Duration_05ms">60</measurement>
+                <measurement code="R_PeakTime_05ms">NotPresent</measurement>
+                <measurement code="R2_Amplitude_uV">NotPresent</measurement>
+                <measurement code="R1_Amplitude_uV">NotPresent</measurement>
+                <measurement code="R0_Amplitude_uV">992</measurement>
+                <measurement code="S2_Amplitude_uV">NotPresent</measurement>
+                <measurement code="Q_Duration_05ms">40</measurement>
+                <measurement code="R2_Duration_05ms">NotPresent</measurement>
+                <measurement code="Q_Amplitude_uV">-62</measurement>
+                <measurement code="P_MinusAmplitude_uV">NotPresent</measurement>
+                <measurement code="P_PlusAmplitude_uV">153</measurement>
+                <measurement code="ST_Slope_slope">-17</measurement>
+                <measurement code="Q_Position_05ms">-40</measurement>
+                <measurement code="R0_MaxPosition_05ms">8</measurement>
+                <measurement code="R1_MaxPosition_05ms">NotPresent</measurement>
+                <measurement code="R2_MaxPosition_05ms">NotPresent</measurement>
+                <measurement code="S2_MaxPosition_05ms">NotPresent</measurement>
+                <measurement code="S2_Duration_05ms">NotPresent</measurement>
+                <measurement code="ST_Area_uV05ms">567</measurement>
+                <measurement code="T_MinusMaxPosition_05ms">456</measurement>
+                <measurement code="T_AreaNegative_uV05ms">0</measurement>
+                <measurement code="T_PlusMaxPosition_05ms">NotPresent</measurement>
+              </measurements>
+              <measurements channel="III">
+                <measurement code="QRS_TimeOffCh_05ms">0</measurement>
+                <measurement code="P_TimeBiPhasicCrossingCh_05ms">NotPresent</measurement>
+                <measurement code="T_TimeOffCh_05ms">678</measurement>
+                <measurement code="Isoline_correction_uV">Unknown</measurement>
+                <measurement code="S_TimeOnCh_05ms">Unknown</measurement>
+                <measurement code="R2_TimeOnCh_05ms">Unknown</measurement>
+                <measurement code="R_TimeOnCh_05ms">Unknown</measurement>
+                <measurement code="Q_TimeOnCh_05ms">NotPresent</measurement>
+                <measurement code="QRS_TimeOnCh_05ms">-72</measurement>
+                <measurement code="P_TimeOffCh_05ms">-228</measurement>
+                <measurement code="P_TimeOnCh_05ms">-400</measurement>
+                <measurement code="QRS_width200uV">140</measurement>
+                <measurement code="QRS_MaxAmplitude">371</measurement>
+                <measurement code="Negative_QRSDelta">-16</measurement>
+                <measurement code="Positive_QRSDelta">376</measurement>
+                <measurement code="RS_Notched_uV">Unknown</measurement>
+                <measurement code="DeltaWave_num">Undetectable</measurement>
+                <measurement code="P_PlusMaxPosition_05ms">-332</measurement>
+                <measurement code="P_MinusMaxPosition_05ms">NotPresent</measurement>
+                <measurement code="T_AreaPositive_uV05ms">139</measurement>
+                <measurement code="ST_PointAdaptive_uV">252</measurement>
+                <measurement code="J_Amplitude_uV">273</measurement>
+                <measurement code="T_MinusAmplitude_uV">106</measurement>
+                <measurement code="S_Duration_05ms">NotPresent</measurement>
+                <measurement code="S_MaxPosition_05ms">NotPresent</measurement>
+                <measurement code="S_Amplitude_uV">NotPresent</measurement>
+                <measurement code="T_PlusAmplitude_uV">NotPresent</measurement>
+                <measurement code="R_Duration_05ms">104</measurement>
+                <measurement code="R_PeakTime_05ms">NotPresent</measurement>
+                <measurement code="R2_Amplitude_uV">NotPresent</measurement>
+                <measurement code="R1_Amplitude_uV">NotPresent</measurement>
+                <measurement code="R0_Amplitude_uV">371</measurement>
+                <measurement code="S2_Amplitude_uV">NotPresent</measurement>
+                <measurement code="Q_Duration_05ms">NotPresent</measurement>
+                <measurement code="R2_Duration_05ms">NotPresent</measurement>
+                <measurement code="Q_Amplitude_uV">NotPresent</measurement>
+                <measurement code="P_MinusAmplitude_uV">NotPresent</measurement>
+                <measurement code="P_PlusAmplitude_uV">38</measurement>
+                <measurement code="ST_Slope_slope">-5</measurement>
+                <measurement code="Q_Position_05ms">NotPresent</measurement>
+                <measurement code="R0_MaxPosition_05ms">0</measurement>
+                <measurement code="R1_MaxPosition_05ms">NotPresent</measurement>
+                <measurement code="R2_MaxPosition_05ms">NotPresent</measurement>
+                <measurement code="S2_MaxPosition_05ms">NotPresent</measurement>
+                <measurement code="S2_Duration_05ms">NotPresent</measurement>
+                <measurement code="ST_Area_uV05ms">268</measurement>
+                <measurement code="T_MinusMaxPosition_05ms">456</measurement>
+                <measurement code="T_AreaNegative_uV05ms">0</measurement>
+                <measurement code="T_PlusMaxPosition_05ms">NotPresent</measurement>
+              </measurements>
+              <measurements channel="aVR">
+                <measurement code="QRS_TimeOffCh_05ms">0</measurement>
+                <measurement code="P_TimeBiPhasicCrossingCh_05ms">NotPresent</measurement>
+                <measurement code="T_TimeOffCh_05ms">678</measurement>
+                <measurement code="Isoline_correction_uV">Unknown</measurement>
+                <measurement code="S_TimeOnCh_05ms">Unknown</measurement>
+                <measurement code="R2_TimeOnCh_05ms">Unknown</measurement>
+                <measurement code="R_TimeOnCh_05ms">Unknown</measurement>
+                <measurement code="Q_TimeOnCh_05ms">NotPresent</measurement>
+                <measurement code="QRS_TimeOnCh_05ms">-72</measurement>
+                <measurement code="P_TimeOffCh_05ms">-228</measurement>
+                <measurement code="P_TimeOnCh_05ms">-400</measurement>
+                <measurement code="QRS_width200uV">144</measurement>
+                <measurement code="QRS_MaxAmplitude">859</measurement>
+                <measurement code="Negative_QRSDelta">-848</measurement>
+                <measurement code="Positive_QRSDelta">64</measurement>
+                <measurement code="RS_Notched_uV">Unknown</measurement>
+                <measurement code="DeltaWave_num">Undetectable</measurement>
+                <measurement code="P_PlusMaxPosition_05ms">NotPresent</measurement>
+                <measurement code="P_MinusMaxPosition_05ms">-320</measurement>
+                <measurement code="T_AreaPositive_uV05ms">0</measurement>
+                <measurement code="ST_PointAdaptive_uV">-398</measurement>
+                <measurement code="J_Amplitude_uV">-458</measurement>
+                <measurement code="T_MinusAmplitude_uV">NotPresent</measurement>
+                <measurement code="S_Duration_05ms">60</measurement>
+                <measurement code="S_MaxPosition_05ms">8</measurement>
+                <measurement code="S_Amplitude_uV">-787</measurement>
+                <measurement code="T_PlusAmplitude_uV">-162</measurement>
+                <measurement code="R_Duration_05ms">44</measurement>
+                <measurement code="R_PeakTime_05ms">NotPresent</measurement>
+                <measurement code="R2_Amplitude_uV">NotPresent</measurement>
+                <measurement code="R1_Amplitude_uV">NotPresent</measurement>
+                <measurement code="R0_Amplitude_uV">72</measurement>
+                <measurement code="S2_Amplitude_uV">NotPresent</measurement>
+                <measurement code="Q_Duration_05ms">NotPresent</measurement>
+                <measurement code="R2_Duration_05ms">NotPresent</measurement>
+                <measurement code="Q_Amplitude_uV">NotPresent</measurement>
+                <measurement code="P_MinusAmplitude_uV">-131</measurement>
+                <measurement code="P_PlusAmplitude_uV">NotPresent</measurement>
+                <measurement code="ST_Slope_slope">15</measurement>
+                <measurement code="Q_Position_05ms">NotPresent</measurement>
+                <measurement code="R0_MaxPosition_05ms">-40</measurement>
+                <measurement code="R1_MaxPosition_05ms">NotPresent</measurement>
+                <measurement code="R2_MaxPosition_05ms">NotPresent</measurement>
+                <measurement code="S2_MaxPosition_05ms">NotPresent</measurement>
+                <measurement code="S2_Duration_05ms">NotPresent</measurement>
+                <measurement code="ST_Area_uV05ms">-430</measurement>
+                <measurement code="T_MinusMaxPosition_05ms">NotPresent</measurement>
+                <measurement code="T_AreaNegative_uV05ms">-233</measurement>
+                <measurement code="T_PlusMaxPosition_05ms">456</measurement>
+              </measurements>
+              <measurements channel="aVL">
+                <measurement code="QRS_TimeOffCh_05ms">0</measurement>
+                <measurement code="P_TimeBiPhasicCrossingCh_05ms">NotPresent</measurement>
+                <measurement code="T_TimeOffCh_05ms">678</measurement>
+                <measurement code="Isoline_correction_uV">Unknown</measurement>
+                <measurement code="S_TimeOnCh_05ms">Unknown</measurement>
+                <measurement code="R2_TimeOnCh_05ms">Unknown</measurement>
+                <measurement code="R_TimeOnCh_05ms">Unknown</measurement>
+                <measurement code="Q_TimeOnCh_05ms">NotPresent</measurement>
+                <measurement code="QRS_TimeOnCh_05ms">-72</measurement>
+                <measurement code="P_TimeOffCh_05ms">-228</measurement>
+                <measurement code="P_TimeOnCh_05ms">-400</measurement>
+                <measurement code="QRS_width200uV">NotPresent</measurement>
+                <measurement code="QRS_MaxAmplitude">80</measurement>
+                <measurement code="Negative_QRSDelta">-24</measurement>
+                <measurement code="Positive_QRSDelta">111</measurement>
+                <measurement code="RS_Notched_uV">Unknown</measurement>
+                <measurement code="DeltaWave_num">6</measurement>
+                <measurement code="P_PlusMaxPosition_05ms">-324</measurement>
+                <measurement code="P_MinusMaxPosition_05ms">NotPresent</measurement>
+                <measurement code="T_AreaPositive_uV05ms">1</measurement>
+                <measurement code="ST_PointAdaptive_uV">9</measurement>
+                <measurement code="J_Amplitude_uV">21</measurement>
+                <measurement code="T_MinusAmplitude_uV">2</measurement>
+                <measurement code="S_Duration_05ms">NotPresent</measurement>
+                <measurement code="S_MaxPosition_05ms">NotPresent</measurement>
+                <measurement code="S_Amplitude_uV">NotPresent</measurement>
+                <measurement code="T_PlusAmplitude_uV">10</measurement>
+                <measurement code="R_Duration_05ms">112</measurement>
+                <measurement code="R_PeakTime_05ms">NotPresent</measurement>
+                <measurement code="R2_Amplitude_uV">NotPresent</measurement>
+                <measurement code="R1_Amplitude_uV">NotPresent</measurement>
+                <measurement code="R0_Amplitude_uV">80</measurement>
+                <measurement code="S2_Amplitude_uV">NotPresent</measurement>
+                <measurement code="Q_Duration_05ms">NotPresent</measurement>
+                <measurement code="R2_Duration_05ms">NotPresent</measurement>
+                <measurement code="Q_Amplitude_uV">NotPresent</measurement>
+                <measurement code="P_MinusAmplitude_uV">NotPresent</measurement>
+                <measurement code="P_PlusAmplitude_uV">33</measurement>
+                <measurement code="ST_Slope_slope">-2</measurement>
+                <measurement code="Q_Position_05ms">NotPresent</measurement>
+                <measurement code="R0_MaxPosition_05ms">4</measurement>
+                <measurement code="R1_MaxPosition_05ms">NotPresent</measurement>
+                <measurement code="R2_MaxPosition_05ms">NotPresent</measurement>
+                <measurement code="S2_MaxPosition_05ms">NotPresent</measurement>
+                <measurement code="S2_Duration_05ms">NotPresent</measurement>
+                <measurement code="ST_Area_uV05ms">9</measurement>
+                <measurement code="T_MinusMaxPosition_05ms">436</measurement>
+                <measurement code="T_AreaNegative_uV05ms">0</measurement>
+                <measurement code="T_PlusMaxPosition_05ms">212</measurement>
+              </measurements>
+              <measurements channel="aVF">
+                <measurement code="QRS_TimeOffCh_05ms">0</measurement>
+                <measurement code="P_TimeBiPhasicCrossingCh_05ms">NotPresent</measurement>
+                <measurement code="T_TimeOffCh_05ms">678</measurement>
+                <measurement code="Isoline_correction_uV">Unknown</measurement>
+                <measurement code="S_TimeOnCh_05ms">Unknown</measurement>
+                <measurement code="R2_TimeOnCh_05ms">Unknown</measurement>
+                <measurement code="R_TimeOnCh_05ms">Unknown</measurement>
+                <measurement code="Q_TimeOnCh_05ms">NotPresent</measurement>
+                <measurement code="QRS_TimeOnCh_05ms">-72</measurement>
+                <measurement code="P_TimeOffCh_05ms">-228</measurement>
+                <measurement code="P_TimeOnCh_05ms">-400</measurement>
+                <measurement code="QRS_width200uV">144</measurement>
+                <measurement code="QRS_MaxAmplitude">687</measurement>
+                <measurement code="Negative_QRSDelta">-29</measurement>
+                <measurement code="Positive_QRSDelta">717</measurement>
+                <measurement code="RS_Notched_uV">Unknown</measurement>
+                <measurement code="DeltaWave_num">6</measurement>
+                <measurement code="P_PlusMaxPosition_05ms">-320</measurement>
+                <measurement code="P_MinusMaxPosition_05ms">NotPresent</measurement>
+                <measurement code="T_AreaPositive_uV05ms">220</measurement>
+                <measurement code="ST_PointAdaptive_uV">388</measurement>
+                <measurement code="J_Amplitude_uV">438</measurement>
+                <measurement code="T_MinusAmplitude_uV">161</measurement>
+                <measurement code="S_Duration_05ms">NotPresent</measurement>
+                <measurement code="S_MaxPosition_05ms">NotPresent</measurement>
+                <measurement code="S_Amplitude_uV">NotPresent</measurement>
+                <measurement code="T_PlusAmplitude_uV">NotPresent</measurement>
+                <measurement code="R_Duration_05ms">104</measurement>
+                <measurement code="R_PeakTime_05ms">NotPresent</measurement>
+                <measurement code="R2_Amplitude_uV">NotPresent</measurement>
+                <measurement code="R1_Amplitude_uV">NotPresent</measurement>
+                <measurement code="R0_Amplitude_uV">687</measurement>
+                <measurement code="S2_Amplitude_uV">NotPresent</measurement>
+                <measurement code="Q_Duration_05ms">NotPresent</measurement>
+                <measurement code="R2_Duration_05ms">NotPresent</measurement>
+                <measurement code="Q_Amplitude_uV">NotPresent</measurement>
+                <measurement code="P_MinusAmplitude_uV">NotPresent</measurement>
+                <measurement code="P_PlusAmplitude_uV">93</measurement>
+                <measurement code="ST_Slope_slope">-12</measurement>
+                <measurement code="Q_Position_05ms">NotPresent</measurement>
+                <measurement code="R0_MaxPosition_05ms">8</measurement>
+                <measurement code="R1_MaxPosition_05ms">NotPresent</measurement>
+                <measurement code="R2_MaxPosition_05ms">NotPresent</measurement>
+                <measurement code="S2_MaxPosition_05ms">NotPresent</measurement>
+                <measurement code="S2_Duration_05ms">NotPresent</measurement>
+                <measurement code="ST_Area_uV05ms">419</measurement>
+                <measurement code="T_MinusMaxPosition_05ms">452</measurement>
+                <measurement code="T_AreaNegative_uV05ms">0</measurement>
+                <measurement code="T_PlusMaxPosition_05ms">NotPresent</measurement>
+              </measurements>
+              <measurements channel="V1">
+                <measurement code="QRS_TimeOffCh_05ms">0</measurement>
+                <measurement code="P_TimeBiPhasicCrossingCh_05ms">NotPresent</measurement>
+                <measurement code="T_TimeOffCh_05ms">678</measurement>
+                <measurement code="Isoline_correction_uV">Unknown</measurement>
+                <measurement code="S_TimeOnCh_05ms">Unknown</measurement>
+                <measurement code="R2_TimeOnCh_05ms">Unknown</measurement>
+                <measurement code="R_TimeOnCh_05ms">Unknown</measurement>
+                <measurement code="Q_TimeOnCh_05ms">NotPresent</measurement>
+                <measurement code="QRS_TimeOnCh_05ms">-72</measurement>
+                <measurement code="P_TimeOffCh_05ms">-232</measurement>
+                <measurement code="P_TimeOnCh_05ms">-400</measurement>
+                <measurement code="QRS_width200uV">16</measurement>
+                <measurement code="QRS_MaxAmplitude">646</measurement>
+                <measurement code="Negative_QRSDelta">-188</measurement>
+                <measurement code="Positive_QRSDelta">210</measurement>
+                <measurement code="RS_Notched_uV">Unknown</measurement>
+                <measurement code="DeltaWave_num">Undetectable</measurement>
+                <measurement code="P_PlusMaxPosition_05ms">-324</measurement>
+                <measurement code="P_MinusMaxPosition_05ms">NotPresent</measurement>
+                <measurement code="T_AreaPositive_uV05ms">0</measurement>
+                <measurement code="ST_PointAdaptive_uV">4</measurement>
+                <measurement code="J_Amplitude_uV">-2</measurement>
+                <measurement code="T_MinusAmplitude_uV">-6</measurement>
+                <measurement code="S_Duration_05ms">28</measurement>
+                <measurement code="S_MaxPosition_05ms">20</measurement>
+                <measurement code="S_Amplitude_uV">-433</measurement>
+                <measurement code="T_PlusAmplitude_uV">6</measurement>
+                <measurement code="R_Duration_05ms">76</measurement>
+                <measurement code="R_PeakTime_05ms">NotPresent</measurement>
+                <measurement code="R2_Amplitude_uV">NotPresent</measurement>
+                <measurement code="R1_Amplitude_uV">NotPresent</measurement>
+                <measurement code="R0_Amplitude_uV">213</measurement>
+                <measurement code="S2_Amplitude_uV">NotPresent</measurement>
+                <measurement code="Q_Duration_05ms">NotPresent</measurement>
+                <measurement code="R2_Duration_05ms">NotPresent</measurement>
+                <measurement code="Q_Amplitude_uV">NotPresent</measurement>
+                <measurement code="P_MinusAmplitude_uV">NotPresent</measurement>
+                <measurement code="P_PlusAmplitude_uV">39</measurement>
+                <measurement code="ST_Slope_slope">5</measurement>
+                <measurement code="Q_Position_05ms">NotPresent</measurement>
+                <measurement code="R0_MaxPosition_05ms">-12</measurement>
+                <measurement code="R1_MaxPosition_05ms">NotPresent</measurement>
+                <measurement code="R2_MaxPosition_05ms">NotPresent</measurement>
+                <measurement code="S2_MaxPosition_05ms">NotPresent</measurement>
+                <measurement code="S2_Duration_05ms">NotPresent</measurement>
+                <measurement code="ST_Area_uV05ms">-1</measurement>
+                <measurement code="T_MinusMaxPosition_05ms">512</measurement>
+                <measurement code="T_AreaNegative_uV05ms">0</measurement>
+                <measurement code="T_PlusMaxPosition_05ms">184</measurement>
+              </measurements>
+              <measurements channel="V2">
+                <measurement code="QRS_TimeOffCh_05ms">0</measurement>
+                <measurement code="P_TimeBiPhasicCrossingCh_05ms">NotPresent</measurement>
+                <measurement code="T_TimeOffCh_05ms">678</measurement>
+                <measurement code="Isoline_correction_uV">Unknown</measurement>
+                <measurement code="S_TimeOnCh_05ms">Unknown</measurement>
+                <measurement code="R2_TimeOnCh_05ms">Unknown</measurement>
+                <measurement code="R_TimeOnCh_05ms">Unknown</measurement>
+                <measurement code="Q_TimeOnCh_05ms">NotPresent</measurement>
+                <measurement code="QRS_TimeOnCh_05ms">-72</measurement>
+                <measurement code="P_TimeOffCh_05ms">-228</measurement>
+                <measurement code="P_TimeOnCh_05ms">-400</measurement>
+                <measurement code="QRS_width200uV">16</measurement>
+                <measurement code="QRS_MaxAmplitude">997</measurement>
+                <measurement code="Negative_QRSDelta">-220</measurement>
+                <measurement code="Positive_QRSDelta">498</measurement>
+                <measurement code="RS_Notched_uV">Unknown</measurement>
+                <measurement code="DeltaWave_num">Undetectable</measurement>
+                <measurement code="P_PlusMaxPosition_05ms">-320</measurement>
+                <measurement code="P_MinusMaxPosition_05ms">NotPresent</measurement>
+                <measurement code="T_AreaPositive_uV05ms">35</measurement>
+                <measurement code="ST_PointAdaptive_uV">57</measurement>
+                <measurement code="J_Amplitude_uV">54</measurement>
+                <measurement code="T_MinusAmplitude_uV">23</measurement>
+                <measurement code="S_Duration_05ms">28</measurement>
+                <measurement code="S_MaxPosition_05ms">24</measurement>
+                <measurement code="S_Amplitude_uV">-518</measurement>
+                <measurement code="T_PlusAmplitude_uV">NotPresent</measurement>
+                <measurement code="R_Duration_05ms">80</measurement>
+                <measurement code="R_PeakTime_05ms">NotPresent</measurement>
+                <measurement code="R2_Amplitude_uV">NotPresent</measurement>
+                <measurement code="R1_Amplitude_uV">NotPresent</measurement>
+                <measurement code="R0_Amplitude_uV">479</measurement>
+                <measurement code="S2_Amplitude_uV">NotPresent</measurement>
+                <measurement code="Q_Duration_05ms">NotPresent</measurement>
+                <measurement code="R2_Duration_05ms">NotPresent</measurement>
+                <measurement code="Q_Amplitude_uV">NotPresent</measurement>
+                <measurement code="P_MinusAmplitude_uV">NotPresent</measurement>
+                <measurement code="P_PlusAmplitude_uV">95</measurement>
+                <measurement code="ST_Slope_slope">-1</measurement>
+                <measurement code="Q_Position_05ms">NotPresent</measurement>
+                <measurement code="R0_MaxPosition_05ms">-4</measurement>
+                <measurement code="R1_MaxPosition_05ms">NotPresent</measurement>
+                <measurement code="R2_MaxPosition_05ms">NotPresent</measurement>
+                <measurement code="S2_MaxPosition_05ms">NotPresent</measurement>
+                <measurement code="S2_Duration_05ms">NotPresent</measurement>
+                <measurement code="ST_Area_uV05ms">63</measurement>
+                <measurement code="T_MinusMaxPosition_05ms">448</measurement>
+                <measurement code="T_AreaNegative_uV05ms">0</measurement>
+                <measurement code="T_PlusMaxPosition_05ms">NotPresent</measurement>
+              </measurements>
+              <measurements channel="V3">
+                <measurement code="QRS_TimeOffCh_05ms">0</measurement>
+                <measurement code="P_TimeBiPhasicCrossingCh_05ms">NotPresent</measurement>
+                <measurement code="T_TimeOffCh_05ms">678</measurement>
+                <measurement code="Isoline_correction_uV">Unknown</measurement>
+                <measurement code="S_TimeOnCh_05ms">Unknown</measurement>
+                <measurement code="R2_TimeOnCh_05ms">Unknown</measurement>
+                <measurement code="R_TimeOnCh_05ms">Unknown</measurement>
+                <measurement code="Q_TimeOnCh_05ms">-76</measurement>
+                <measurement code="QRS_TimeOnCh_05ms">-72</measurement>
+                <measurement code="P_TimeOffCh_05ms">-228</measurement>
+                <measurement code="P_TimeOnCh_05ms">-400</measurement>
+                <measurement code="QRS_width200uV">56</measurement>
+                <measurement code="QRS_MaxAmplitude">1196</measurement>
+                <measurement code="Negative_QRSDelta">-176</measurement>
+                <measurement code="Positive_QRSDelta">1198</measurement>
+                <measurement code="RS_Notched_uV">Unknown</measurement>
+                <measurement code="DeltaWave_num">Undetectable</measurement>
+                <measurement code="P_PlusMaxPosition_05ms">-320</measurement>
+                <measurement code="P_MinusMaxPosition_05ms">NotPresent</measurement>
+                <measurement code="T_AreaPositive_uV05ms">158</measurement>
+                <measurement code="ST_PointAdaptive_uV">260</measurement>
+                <measurement code="J_Amplitude_uV">278</measurement>
+                <measurement code="T_MinusAmplitude_uV">106</measurement>
+                <measurement code="S_Duration_05ms">NotPresent</measurement>
+                <measurement code="S_MaxPosition_05ms">NotPresent</measurement>
+                <measurement code="S_Amplitude_uV">NotPresent</measurement>
+                <measurement code="T_PlusAmplitude_uV">NotPresent</measurement>
+                <measurement code="R_Duration_05ms">68</measurement>
+                <measurement code="R_PeakTime_05ms">NotPresent</measurement>
+                <measurement code="R2_Amplitude_uV">NotPresent</measurement>
+                <measurement code="R1_Amplitude_uV">NotPresent</measurement>
+                <measurement code="R0_Amplitude_uV">1132</measurement>
+                <measurement code="S2_Amplitude_uV">NotPresent</measurement>
+                <measurement code="Q_Duration_05ms">32</measurement>
+                <measurement code="R2_Duration_05ms">NotPresent</measurement>
+                <measurement code="Q_Amplitude_uV">-64</measurement>
+                <measurement code="P_MinusAmplitude_uV">NotPresent</measurement>
+                <measurement code="P_PlusAmplitude_uV">120</measurement>
+                <measurement code="ST_Slope_slope">-6</measurement>
+                <measurement code="Q_Position_05ms">-48</measurement>
+                <measurement code="R0_MaxPosition_05ms">-4</measurement>
+                <measurement code="R1_MaxPosition_05ms">NotPresent</measurement>
+                <measurement code="R2_MaxPosition_05ms">NotPresent</measurement>
+                <measurement code="S2_MaxPosition_05ms">NotPresent</measurement>
+                <measurement code="S2_Duration_05ms">NotPresent</measurement>
+                <measurement code="ST_Area_uV05ms">278</measurement>
+                <measurement code="T_MinusMaxPosition_05ms">452</measurement>
+                <measurement code="T_AreaNegative_uV05ms">0</measurement>
+                <measurement code="T_PlusMaxPosition_05ms">NotPresent</measurement>
+              </measurements>
+              <measurements channel="V4">
+                <measurement code="QRS_TimeOffCh_05ms">0</measurement>
+                <measurement code="P_TimeBiPhasicCrossingCh_05ms">NotPresent</measurement>
+                <measurement code="T_TimeOffCh_05ms">678</measurement>
+                <measurement code="Isoline_correction_uV">Unknown</measurement>
+                <measurement code="S_TimeOnCh_05ms">Unknown</measurement>
+                <measurement code="R2_TimeOnCh_05ms">Unknown</measurement>
+                <measurement code="R_TimeOnCh_05ms">Unknown</measurement>
+                <measurement code="Q_TimeOnCh_05ms">-76</measurement>
+                <measurement code="QRS_TimeOnCh_05ms">-72</measurement>
+                <measurement code="P_TimeOffCh_05ms">-228</measurement>
+                <measurement code="P_TimeOnCh_05ms">-400</measurement>
+                <measurement code="QRS_width200uV">152</measurement>
+                <measurement code="QRS_MaxAmplitude">1372</measurement>
+                <measurement code="Negative_QRSDelta">-97</measurement>
+                <measurement code="Positive_QRSDelta">1379</measurement>
+                <measurement code="RS_Notched_uV">Unknown</measurement>
+                <measurement code="DeltaWave_num">Undetectable</measurement>
+                <measurement code="P_PlusMaxPosition_05ms">-320</measurement>
+                <measurement code="P_MinusMaxPosition_05ms">NotPresent</measurement>
+                <measurement code="T_AreaPositive_uV05ms">263</measurement>
+                <measurement code="ST_PointAdaptive_uV">438</measurement>
+                <measurement code="J_Amplitude_uV">489</measurement>
+                <measurement code="T_MinusAmplitude_uV">180</measurement>
+                <measurement code="S_Duration_05ms">NotPresent</measurement>
+                <measurement code="S_MaxPosition_05ms">NotPresent</measurement>
+                <measurement code="S_Amplitude_uV">NotPresent</measurement>
+                <measurement code="T_PlusAmplitude_uV">NotPresent</measurement>
+                <measurement code="R_Duration_05ms">64</measurement>
+                <measurement code="R_PeakTime_05ms">NotPresent</measurement>
+                <measurement code="R2_Amplitude_uV">NotPresent</measurement>
+                <measurement code="R1_Amplitude_uV">NotPresent</measurement>
+                <measurement code="R0_Amplitude_uV">1272</measurement>
+                <measurement code="S2_Amplitude_uV">NotPresent</measurement>
+                <measurement code="Q_Duration_05ms">36</measurement>
+                <measurement code="R2_Duration_05ms">NotPresent</measurement>
+                <measurement code="Q_Amplitude_uV">-100</measurement>
+                <measurement code="P_MinusAmplitude_uV">NotPresent</measurement>
+                <measurement code="P_PlusAmplitude_uV">116</measurement>
+                <measurement code="ST_Slope_slope">-12</measurement>
+                <measurement code="Q_Position_05ms">-44</measurement>
+                <measurement code="R0_MaxPosition_05ms">4</measurement>
+                <measurement code="R1_MaxPosition_05ms">NotPresent</measurement>
+                <measurement code="R2_MaxPosition_05ms">NotPresent</measurement>
+                <measurement code="S2_MaxPosition_05ms">NotPresent</measurement>
+                <measurement code="S2_Duration_05ms">NotPresent</measurement>
+                <measurement code="ST_Area_uV05ms">466</measurement>
+                <measurement code="T_MinusMaxPosition_05ms">456</measurement>
+                <measurement code="T_AreaNegative_uV05ms">0</measurement>
+                <measurement code="T_PlusMaxPosition_05ms">NotPresent</measurement>
+              </measurements>
+              <measurements channel="V5">
+                <measurement code="QRS_TimeOffCh_05ms">0</measurement>
+                <measurement code="P_TimeBiPhasicCrossingCh_05ms">NotPresent</measurement>
+                <measurement code="T_TimeOffCh_05ms">678</measurement>
+                <measurement code="Isoline_correction_uV">Unknown</measurement>
+                <measurement code="S_TimeOnCh_05ms">Unknown</measurement>
+                <measurement code="R2_TimeOnCh_05ms">Unknown</measurement>
+                <measurement code="R_TimeOnCh_05ms">Unknown</measurement>
+                <measurement code="Q_TimeOnCh_05ms">-76</measurement>
+                <measurement code="QRS_TimeOnCh_05ms">-72</measurement>
+                <measurement code="P_TimeOffCh_05ms">-228</measurement>
+                <measurement code="P_TimeOnCh_05ms">-400</measurement>
+                <measurement code="QRS_width200uV">148</measurement>
+                <measurement code="QRS_MaxAmplitude">1200</measurement>
+                <measurement code="Negative_QRSDelta">-109</measurement>
+                <measurement code="Positive_QRSDelta">1203</measurement>
+                <measurement code="RS_Notched_uV">Unknown</measurement>
+                <measurement code="DeltaWave_num">Undetectable</measurement>
+                <measurement code="P_PlusMaxPosition_05ms">-316</measurement>
+                <measurement code="P_MinusMaxPosition_05ms">NotPresent</measurement>
+                <measurement code="T_AreaPositive_uV05ms">278</measurement>
+                <measurement code="ST_PointAdaptive_uV">468</measurement>
+                <measurement code="J_Amplitude_uV">528</measurement>
+                <measurement code="T_MinusAmplitude_uV">200</measurement>
+                <measurement code="S_Duration_05ms">NotPresent</measurement>
+                <measurement code="S_MaxPosition_05ms">NotPresent</measurement>
+                <measurement code="S_Amplitude_uV">NotPresent</measurement>
+                <measurement code="T_PlusAmplitude_uV">NotPresent</measurement>
+                <measurement code="R_Duration_05ms">60</measurement>
+                <measurement code="R_PeakTime_05ms">NotPresent</measurement>
+                <measurement code="R2_Amplitude_uV">NotPresent</measurement>
+                <measurement code="R1_Amplitude_uV">NotPresent</measurement>
+                <measurement code="R0_Amplitude_uV">1081</measurement>
+                <measurement code="S2_Amplitude_uV">NotPresent</measurement>
+                <measurement code="Q_Duration_05ms">44</measurement>
+                <measurement code="R2_Duration_05ms">NotPresent</measurement>
+                <measurement code="Q_Amplitude_uV">-119</measurement>
+                <measurement code="P_MinusAmplitude_uV">NotPresent</measurement>
+                <measurement code="P_PlusAmplitude_uV">120</measurement>
+                <measurement code="ST_Slope_slope">-14</measurement>
+                <measurement code="Q_Position_05ms">-40</measurement>
+                <measurement code="R0_MaxPosition_05ms">4</measurement>
+                <measurement code="R1_MaxPosition_05ms">NotPresent</measurement>
+                <measurement code="R2_MaxPosition_05ms">NotPresent</measurement>
+                <measurement code="S2_MaxPosition_05ms">NotPresent</measurement>
+                <measurement code="S2_Duration_05ms">NotPresent</measurement>
+                <measurement code="ST_Area_uV05ms">504</measurement>
+                <measurement code="T_MinusMaxPosition_05ms">456</measurement>
+                <measurement code="T_AreaNegative_uV05ms">0</measurement>
+                <measurement code="T_PlusMaxPosition_05ms">NotPresent</measurement>
+              </measurements>
+              <measurements channel="V6">
+                <measurement code="QRS_TimeOffCh_05ms">0</measurement>
+                <measurement code="P_TimeBiPhasicCrossingCh_05ms">NotPresent</measurement>
+                <measurement code="T_TimeOffCh_05ms">678</measurement>
+                <measurement code="Isoline_correction_uV">Unknown</measurement>
+                <measurement code="S_TimeOnCh_05ms">Unknown</measurement>
+                <measurement code="R2_TimeOnCh_05ms">Unknown</measurement>
+                <measurement code="R_TimeOnCh_05ms">Unknown</measurement>
+                <measurement code="Q_TimeOnCh_05ms">-76</measurement>
+                <measurement code="QRS_TimeOnCh_05ms">-72</measurement>
+                <measurement code="P_TimeOffCh_05ms">-228</measurement>
+                <measurement code="P_TimeOnCh_05ms">-400</measurement>
+                <measurement code="QRS_width200uV">148</measurement>
+                <measurement code="QRS_MaxAmplitude">981</measurement>
+                <measurement code="Negative_QRSDelta">-98</measurement>
+                <measurement code="Positive_QRSDelta">944</measurement>
+                <measurement code="RS_Notched_uV">Unknown</measurement>
+                <measurement code="DeltaWave_num">Undetectable</measurement>
+                <measurement code="P_PlusMaxPosition_05ms">-316</measurement>
+                <measurement code="P_MinusMaxPosition_05ms">NotPresent</measurement>
+                <measurement code="T_AreaPositive_uV05ms">204</measurement>
+                <measurement code="ST_PointAdaptive_uV">346</measurement>
+                <measurement code="J_Amplitude_uV">390</measurement>
+                <measurement code="T_MinusAmplitude_uV">145</measurement>
+                <measurement code="S_Duration_05ms">NotPresent</measurement>
+                <measurement code="S_MaxPosition_05ms">NotPresent</measurement>
+                <measurement code="S_Amplitude_uV">NotPresent</measurement>
+                <measurement code="T_PlusAmplitude_uV">NotPresent</measurement>
+                <measurement code="R_Duration_05ms">64</measurement>
+                <measurement code="R_PeakTime_05ms">NotPresent</measurement>
+                <measurement code="R2_Amplitude_uV">NotPresent</measurement>
+                <measurement code="R1_Amplitude_uV">NotPresent</measurement>
+                <measurement code="R0_Amplitude_uV">872</measurement>
+                <measurement code="S2_Amplitude_uV">NotPresent</measurement>
+                <measurement code="Q_Duration_05ms">44</measurement>
+                <measurement code="R2_Duration_05ms">NotPresent</measurement>
+                <measurement code="Q_Amplitude_uV">-109</measurement>
+                <measurement code="P_MinusAmplitude_uV">NotPresent</measurement>
+                <measurement code="P_PlusAmplitude_uV">92</measurement>
+                <measurement code="ST_Slope_slope">-12</measurement>
+                <measurement code="Q_Position_05ms">-40</measurement>
+                <measurement code="R0_MaxPosition_05ms">8</measurement>
+                <measurement code="R1_MaxPosition_05ms">NotPresent</measurement>
+                <measurement code="R2_MaxPosition_05ms">NotPresent</measurement>
+                <measurement code="S2_MaxPosition_05ms">NotPresent</measurement>
+                <measurement code="S2_Duration_05ms">NotPresent</measurement>
+                <measurement code="ST_Area_uV05ms">375</measurement>
+                <measurement code="T_MinusMaxPosition_05ms">456</measurement>
+                <measurement code="T_AreaNegative_uV05ms">0</measurement>
+                <measurement code="T_PlusMaxPosition_05ms">NotPresent</measurement>
+              </measurements>
+            </event>
+          </eventTable>
+        </diagnosticStep>
+        <diagnosticStep name="filteredSignal">
+          <processedData>
+            <container format="Bebi" fileName="fb95c5c7-b693-49dc-9598-7741be014ca5.filtered.bebi"/>
+          </processedData>
+          <eventTable type="Beat">
+            <event position="371">
+              <classification code="beatQuestionable"/>
+              <measurements>
+                <measurement code="T_TimeOff_05ms">160</measurement>
+                <measurement code="BSA_Group_Idx">32768</measurement>
+                <measurement code="QRS_TimeOn_05ms">32768</measurement>
+                <measurement code="QRS_TimeOff_05ms">65464</measurement>
+                <measurement code="RR_Distance_05ms">2147483647</measurement>
+              </measurements>
+            </event>
+            <event position="860">
+              <classification code="beatNormal"/>
+              <measurements>
+                <measurement code="T_TimeOff_05ms">32768</measurement>
+                <measurement code="BSA_Group_Idx">0</measurement>
+                <measurement code="QRS_TimeOn_05ms">65533</measurement>
+                <measurement code="QRS_TimeOff_05ms">32768</measurement>
+                <measurement code="RR_Distance_05ms">1956</measurement>
+              </measurements>
+            </event>
+            <event position="1351">
+              <classification code="beatNormal"/>
+              <measurements>
+                <measurement code="T_TimeOff_05ms">32768</measurement>
+                <measurement code="BSA_Group_Idx">Undetectable</measurement>
+                <measurement code="QRS_TimeOn_05ms">Undetectable</measurement>
+                <measurement code="QRS_TimeOff_05ms">Undetectable</measurement>
+                <measurement code="RR_Distance_05ms">1964</measurement>
+              </measurements>
+            </event>
+            <event position="1842">
+              <classification code="beatNormal"/>
+              <measurements>
+                <measurement code="T_TimeOff_05ms">100</measurement>
+                <measurement code="BSA_Group_Idx">65464</measurement>
+                <measurement code="QRS_TimeOn_05ms">Undetectable</measurement>
+                <measurement code="QRS_TimeOff_05ms">32768</measurement>
+                <measurement code="RR_Distance_05ms">1964</measurement>
+              </measurements>
+            </event>
+            <event position="2332">
+              <classification code="beatNormal"/>
+              <measurements>
+                <measurement code="T_TimeOff_05ms">Undetectable</measurement>
+                <measurement code="BSA_Group_Idx">Undetectable</measurement>
+                <measurement code="QRS_TimeOn_05ms">Undetectable</measurement>
+                <measurement code="QRS_TimeOff_05ms">Undetectable</measurement>
+                <measurement code="RR_Distance_05ms">1960</measurement>
+              </measurements>
+            </event>
+            <event position="2823">
+              <classification code="beatNormal"/>
+              <measurements>
+                <measurement code="T_TimeOff_05ms">Undetectable</measurement>
+                <measurement code="BSA_Group_Idx">Undetectable</measurement>
+                <measurement code="QRS_TimeOn_05ms">Undetectable</measurement>
+                <measurement code="QRS_TimeOff_05ms">Undetectable</measurement>
+                <measurement code="RR_Distance_05ms">1964</measurement>
+              </measurements>
+            </event>
+            <event position="3314">
+              <classification code="beatNormal"/>
+              <measurements>
+                <measurement code="T_TimeOff_05ms">Undetectable</measurement>
+                <measurement code="BSA_Group_Idx">Undetectable</measurement>
+                <measurement code="QRS_TimeOn_05ms">Undetectable</measurement>
+                <measurement code="QRS_TimeOff_05ms">Undetectable</measurement>
+                <measurement code="RR_Distance_05ms">1964</measurement>
+              </measurements>
+            </event>
+            <event position="3805">
+              <classification code="beatNormal"/>
+              <measurements>
+                <measurement code="T_TimeOff_05ms">Undetectable</measurement>
+                <measurement code="BSA_Group_Idx">Undetectable</measurement>
+                <measurement code="QRS_TimeOn_05ms">Undetectable</measurement>
+                <measurement code="QRS_TimeOff_05ms">Undetectable</measurement>
+                <measurement code="RR_Distance_05ms">1964</measurement>
+              </measurements>
+            </event>
+            <event position="4296">
+              <classification code="beatNormal"/>
+              <measurements>
+                <measurement code="T_TimeOff_05ms">200</measurement>
+                <measurement code="BSA_Group_Idx">423</measurement>
+                <measurement code="QRS_TimeOn_05ms">32768</measurement>
+                <measurement code="QRS_TimeOff_05ms">65400</measurement>
+                <measurement code="RR_Distance_05ms">1964</measurement>
+              </measurements>
+            </event>
+            <event position="4786">
+              <classification code="beatNormal"/>
+              <measurements>
+                <measurement code="T_TimeOff_05ms">65300</measurement>
+                <measurement code="BSA_Group_Idx">40</measurement>
+                <measurement code="QRS_TimeOn_05ms">0</measurement>
+                <measurement code="QRS_TimeOff_05ms">65132</measurement>
+                <measurement code="RR_Distance_05ms">1960</measurement>
+              </measurements>
+            </event>
+            <event position="5277">
+              <classification code="beatNormal"/>
+              <measurements>
+                <measurement code="T_TimeOff_05ms">32768</measurement>
+                <measurement code="BSA_Group_Idx">65464</measurement>
+                <measurement code="QRS_TimeOn_05ms">40</measurement>
+                <measurement code="QRS_TimeOff_05ms">674</measurement>
+                <measurement code="RR_Distance_05ms">1964</measurement>
+              </measurements>
+            </event>
+            <event position="5768">
+              <classification code="beatNormal"/>
+              <measurements>
+                <measurement code="T_TimeOff_05ms">16</measurement>
+                <measurement code="BSA_Group_Idx">65400</measurement>
+                <measurement code="QRS_TimeOn_05ms">56</measurement>
+                <measurement code="QRS_TimeOff_05ms">0</measurement>
+                <measurement code="RR_Distance_05ms">1964</measurement>
+              </measurements>
+            </event>
+            <event position="6258">
+              <classification code="beatNormal"/>
+              <measurements>
+                <measurement code="T_TimeOff_05ms">597</measurement>
+                <measurement code="BSA_Group_Idx">65454</measurement>
+                <measurement code="QRS_TimeOn_05ms">40</measurement>
+                <measurement code="QRS_TimeOff_05ms">65496</measurement>
+                <measurement code="RR_Distance_05ms">1960</measurement>
+              </measurements>
+            </event>
+            <event position="6749">
+              <classification code="beatNormal"/>
+              <measurements>
+                <measurement code="T_TimeOff_05ms">200</measurement>
+                <measurement code="BSA_Group_Idx">423</measurement>
+                <measurement code="QRS_TimeOn_05ms">32768</measurement>
+                <measurement code="QRS_TimeOff_05ms">65400</measurement>
+                <measurement code="RR_Distance_05ms">1964</measurement>
+              </measurements>
+            </event>
+            <event position="7239">
+              <classification code="beatNormal"/>
+              <measurements>
+                <measurement code="T_TimeOff_05ms">65312</measurement>
+                <measurement code="BSA_Group_Idx">40</measurement>
+                <measurement code="QRS_TimeOn_05ms">0</measurement>
+                <measurement code="QRS_TimeOff_05ms">65120</measurement>
+                <measurement code="RR_Distance_05ms">1960</measurement>
+              </measurements>
+            </event>
+          </eventTable>
+        </diagnosticStep>
+        <diagnosticStep name="globalResults">
+          <measurements>
+            <measurement code="HR_bpm">61</measurement>
+            <measurement code="RR_AvgDistance_05ms">1962</measurement>
+            <measurement code="P_Duration_05ms">172</measurement>
+            <measurement code="PQ_Duration_05ms">328</measurement>
+            <measurement code="QRS_Duration_05ms">116</measurement>
+            <measurement code="QT_Duration_05ms">750</measurement>
+            <measurement code="P_Axis_deg">48</measurement>
+            <measurement code="QRS_Axis_deg">56</measurement>
+            <measurement code="T_Axis_deg">59</measurement>
+            <measurement code="QTc_Duration_05ms">758</measurement>
+          </measurements>
+          <statements>
+            <statement code="SR"/>
+            <statement code="ACS_CO"/>
+            <statement code="STE_LDS_MAR">
+              <properties>
+                <property name="channels">
+                  <channel name="I"/>
+                  <channel name="II"/>
+                  <channel name="III"/>
+                  <channel name="aVF"/>
+                  <channel name="V4"/>
+                  <channel name="V5"/>
+                  <channel name="V6"/>
+                </property>
+              </properties>
+            </statement>
+            <statement valid="true" code="STELIW_PS"/>
+            <statement>
+              <value>User statement</value>
+            </statement>
+            <statement code="AECG"/>
+          </statements>
+        </diagnosticStep>
+        <diagnosticStep name="pacemakerAnalysis">
+          <eventTable type="Pacing"/>
+        </diagnosticStep>
+        <analysedDatetime>2023-12-06T14:37:36</analysedDatetime>
+        <analyst userGuid="{b5ca9896-6023-4673-98b0-694058729f5d}"/>
+      </analysis>
+      <results>
+        <conclusion valid="true">Sinus rhythm,Cannot rule out ACS (acute coronary syndrome),Marked ST elevation in leads I II III aVF V4 V5 V6,ST elevation of inferior wall, possible infarction,User statement</conclusion>
+        <medicalFindings valid="true">Doctors summary</medicalFindings>
+        <evaluatedDatetime>2023-12-06T14:37:36</evaluatedDatetime>
+      </results>
+    </examination>
+  </examinations>
+</BtlXmlNg>

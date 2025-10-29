@@ -1,0 +1,366 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BtlXmlNg version="1.0.3">
+  <header>
+    <hardware category="ecg" model="BTL 8 Elite" serialNumber="dinesh-0782-"/>
+    <software name="ECG2" version="1.dinesh-2025-01-10T16:19:36+05:30"/>
+    <createdDatetime>2025-01-10T18:47:30</createdDatetime>
+  </header>
+  <users>
+    <user guid="{b5ca9896-6023-4673-98b0-694058729f5d}" type="unknown">
+      <firstName/>
+      <surname>admin</surname>
+    </user>
+  </users>
+  <patients>
+    <patient guid="{3fab94c3-3225-432e-914b-106829ca4c9e}" type="regular" demo="true">
+      <firstName/>
+      <surname>RhythmPlusTestV1</surname>
+      <titleBefore/>
+      <externalId origin="HIS"/>
+      <classification>European</classification>
+    </patient>
+  </patients>
+  <examinations>
+    <examination guid="{1e8122ee-389d-4c82-8d1e-003dde92dd80}" patientGuid="{3fab94c3-3225-432e-914b-106829ca4c9e}" type="EcgRhythm" demo="true">
+      <patientSnapshot>
+        <classification>European</classification>
+      </patientSnapshot>
+      <acquisition>
+        <sourceDevice model="BTL 8 Elite" revision="Desktop-100" swVersion="1.dinesh-2025-01-10T" serialNumber="dinesh-0782-">
+          <ecgDevice>
+            <profile>ACable_12leads</profile>
+          </ecgDevice>
+        </sourceDevice>
+        <rawData guid="{4b7f2ac2-c030-45eb-8a6d-a793c2ce72c8}">
+          <recordedDatetime>2025-01-10T18:27:33</recordedDatetime>
+          <signal>
+            <channel name="I" sampleRate="1000" dataType="int" sensitivity="14084" bitDepth="24"/>
+            <channel name="II" sampleRate="1000" dataType="int" sensitivity="14084" bitDepth="24"/>
+            <channel name="V1" sampleRate="1000" dataType="int" sensitivity="14084" bitDepth="24"/>
+            <channel name="V2" sampleRate="1000" dataType="int" sensitivity="14084" bitDepth="24"/>
+            <channel name="V3" sampleRate="1000" dataType="int" sensitivity="14084" bitDepth="24"/>
+            <channel name="V4" sampleRate="1000" dataType="int" sensitivity="14084" bitDepth="24"/>
+            <channel name="V5" sampleRate="1000" dataType="int" sensitivity="14084" bitDepth="24"/>
+            <channel name="V6" sampleRate="1000" dataType="int" sensitivity="14084" bitDepth="24"/>
+            <channel name="physicalLeadoffR" sampleRate="1000" dataType="byte"/>
+            <channel name="physicalLeadoffL" sampleRate="1000" dataType="byte"/>
+            <channel name="physicalLeadoffF" sampleRate="1000" dataType="byte"/>
+            <channel name="physicalLeadoffC1" sampleRate="1000" dataType="byte"/>
+            <channel name="physicalLeadoffC2" sampleRate="1000" dataType="byte"/>
+            <channel name="physicalLeadoffC3" sampleRate="1000" dataType="byte"/>
+            <channel name="physicalLeadoffC4" sampleRate="1000" dataType="byte"/>
+            <channel name="physicalLeadoffC5" sampleRate="1000" dataType="byte"/>
+            <channel name="physicalLeadoffC6" sampleRate="1000" dataType="byte"/>
+            <channel name="pacemaker" sampleRate="1000" dataType="byte"/>
+            <interleaved serialization="Binary" endianity="LE" fileName="d68a0eca-9d29-4fd2-9c5f-0cd72e9ff952.raw.data"/>
+          </signal>
+        </rawData>
+        <acquisitor userGuid="{b5ca9896-6023-4673-98b0-694058729f5d}"/>
+      </acquisition>
+      <analysis rawDataGuid="{4b7f2ac2-c030-45eb-8a6d-a793c2ce72c8}">
+        <analysers>
+          <analyser module="EcgDiag" version="7.3.3.0"/>
+        </analysers>
+        <properties>
+          <property name="stripRange">
+            <start>5000</start>
+            <length>10000</length>
+          </property>
+          <property name="viewChannels">
+            <channel name="I"/>
+            <channel name="II"/>
+            <channel name="III"/>
+            <channel name="aVR"/>
+            <channel name="aVL"/>
+            <channel name="aVF"/>
+            <channel name="V1"/>
+            <channel name="V2"/>
+            <channel name="V3"/>
+            <channel name="V4"/>
+            <channel name="V5"/>
+            <channel name="V6"/>
+          </property>
+          <property name="signalSpeed">25.00</property>
+          <property name="signalSensitivity">10.00</property>
+          <property name="halfSensitivity">false</property>
+        </properties>
+        <diagnosticStep name="filteredSignal">
+          <processedData>
+            <recordedDatetime>2025-01-10T18:27:33</recordedDatetime>
+            <appliedFilters>
+              <filter type="DF_AdaptiveMains, DF_AdaptiveMyoWaveletNoPace, DF_KALMAN"/>
+            </appliedFilters>
+            <signal>
+              <channel name="I" sampleRate="500" dataType="int" sensitivity="1000"/>
+              <channel name="II" sampleRate="500" dataType="int" sensitivity="1000"/>
+              <channel name="III" sampleRate="500" dataType="int" sensitivity="1000"/>
+              <channel name="aVR" sampleRate="500" dataType="int" sensitivity="1000"/>
+              <channel name="aVL" sampleRate="500" dataType="int" sensitivity="1000"/>
+              <channel name="aVF" sampleRate="500" dataType="int" sensitivity="1000"/>
+              <channel name="V1" sampleRate="500" dataType="int" sensitivity="1000"/>
+              <channel name="V2" sampleRate="500" dataType="int" sensitivity="1000"/>
+              <channel name="V3" sampleRate="500" dataType="int" sensitivity="1000"/>
+              <channel name="V4" sampleRate="500" dataType="int" sensitivity="1000"/>
+              <channel name="V5" sampleRate="500" dataType="int" sensitivity="1000"/>
+              <channel name="V6" sampleRate="500" dataType="int" sensitivity="1000"/>
+              <channel name="physicalLeadoffI" sampleRate="500" dataType="byte"/>
+              <channel name="physicalLeadoffII" sampleRate="500" dataType="byte"/>
+              <channel name="physicalLeadoffIII" sampleRate="500" dataType="byte"/>
+              <channel name="physicalLeadoffaVR" sampleRate="500" dataType="byte"/>
+              <channel name="physicalLeadoffaVL" sampleRate="500" dataType="byte"/>
+              <channel name="physicalLeadoffaVF" sampleRate="500" dataType="byte"/>
+              <channel name="physicalLeadoffV1" sampleRate="500" dataType="byte"/>
+              <channel name="physicalLeadoffV2" sampleRate="500" dataType="byte"/>
+              <channel name="physicalLeadoffV3" sampleRate="500" dataType="byte"/>
+              <channel name="physicalLeadoffV4" sampleRate="500" dataType="byte"/>
+              <channel name="physicalLeadoffV5" sampleRate="500" dataType="byte"/>
+              <channel name="physicalLeadoffV6" sampleRate="500" dataType="byte"/>
+              <channel name="pacemaker" sampleRate="500" dataType="byte"/>
+              <interleaved serialization="Binary" endianity="LE" fileName="9e21d9a5-0b1b-4812-b8f8-2007f91975f3.filtered.data"/>
+            </signal>
+          </processedData>
+          <eventTable type="Beat">
+            <event position="308">
+              <classification code="eventUnknown"/>
+              <measurements>
+                <measurement code="T_TimeOff_05ms">32768</measurement>
+                <measurement code="BSA_Group_Idx">0</measurement>
+                <measurement code="QRS_TimeOn_05ms">32768</measurement>
+                <measurement code="QRS_TimeOff_05ms">32768</measurement>
+                <measurement code="RR_Distance_05ms">1476</measurement>
+              </measurements>
+            </event>
+            <event position="538">
+              <classification code="eventUnknown"/>
+              <measurements>
+                <measurement code="T_TimeOff_05ms">32768</measurement>
+                <measurement code="BSA_Group_Idx">0</measurement>
+                <measurement code="QRS_TimeOn_05ms">32768</measurement>
+                <measurement code="QRS_TimeOff_05ms">32768</measurement>
+                <measurement code="RR_Distance_05ms">920</measurement>
+              </measurements>
+            </event>
+            <event position="938">
+              <classification code="eventUnknown"/>
+              <measurements>
+                <measurement code="T_TimeOff_05ms">32768</measurement>
+                <measurement code="BSA_Group_Idx">0</measurement>
+                <measurement code="QRS_TimeOn_05ms">32768</measurement>
+                <measurement code="QRS_TimeOff_05ms">32768</measurement>
+                <measurement code="RR_Distance_05ms">1600</measurement>
+              </measurements>
+            </event>
+            <event position="1299">
+              <classification code="eventUnknown"/>
+              <measurements>
+                <measurement code="T_TimeOff_05ms">32768</measurement>
+                <measurement code="BSA_Group_Idx">0</measurement>
+                <measurement code="QRS_TimeOn_05ms">32768</measurement>
+                <measurement code="QRS_TimeOff_05ms">32768</measurement>
+                <measurement code="RR_Distance_05ms">1444</measurement>
+              </measurements>
+            </event>
+            <event position="1668">
+              <classification code="eventUnknown"/>
+              <measurements>
+                <measurement code="T_TimeOff_05ms">32768</measurement>
+                <measurement code="BSA_Group_Idx">0</measurement>
+                <measurement code="QRS_TimeOn_05ms">32768</measurement>
+                <measurement code="QRS_TimeOff_05ms">32768</measurement>
+                <measurement code="RR_Distance_05ms">1476</measurement>
+              </measurements>
+            </event>
+            <event position="1898">
+              <classification code="eventUnknown"/>
+              <measurements>
+                <measurement code="T_TimeOff_05ms">32768</measurement>
+                <measurement code="BSA_Group_Idx">0</measurement>
+                <measurement code="QRS_TimeOn_05ms">32768</measurement>
+                <measurement code="QRS_TimeOff_05ms">32768</measurement>
+                <measurement code="RR_Distance_05ms">920</measurement>
+              </measurements>
+            </event>
+            <event position="2298">
+              <classification code="eventUnknown"/>
+              <measurements>
+                <measurement code="T_TimeOff_05ms">32768</measurement>
+                <measurement code="BSA_Group_Idx">0</measurement>
+                <measurement code="QRS_TimeOn_05ms">32768</measurement>
+                <measurement code="QRS_TimeOff_05ms">32768</measurement>
+                <measurement code="RR_Distance_05ms">1600</measurement>
+              </measurements>
+            </event>
+            <event position="2659">
+              <classification code="eventUnknown"/>
+              <measurements>
+                <measurement code="T_TimeOff_05ms">32768</measurement>
+                <measurement code="BSA_Group_Idx">0</measurement>
+                <measurement code="QRS_TimeOn_05ms">32768</measurement>
+                <measurement code="QRS_TimeOff_05ms">32768</measurement>
+                <measurement code="RR_Distance_05ms">1444</measurement>
+              </measurements>
+            </event>
+            <event position="3028">
+              <classification code="eventUnknown"/>
+              <measurements>
+                <measurement code="T_TimeOff_05ms">32768</measurement>
+                <measurement code="BSA_Group_Idx">0</measurement>
+                <measurement code="QRS_TimeOn_05ms">32768</measurement>
+                <measurement code="QRS_TimeOff_05ms">32768</measurement>
+                <measurement code="RR_Distance_05ms">1476</measurement>
+              </measurements>
+            </event>
+            <event position="3258">
+              <classification code="eventUnknown"/>
+              <measurements>
+                <measurement code="T_TimeOff_05ms">32768</measurement>
+                <measurement code="BSA_Group_Idx">0</measurement>
+                <measurement code="QRS_TimeOn_05ms">32768</measurement>
+                <measurement code="QRS_TimeOff_05ms">32768</measurement>
+                <measurement code="RR_Distance_05ms">920</measurement>
+              </measurements>
+            </event>
+            <event position="3658">
+              <classification code="eventUnknown"/>
+              <measurements>
+                <measurement code="T_TimeOff_05ms">32768</measurement>
+                <measurement code="BSA_Group_Idx">0</measurement>
+                <measurement code="QRS_TimeOn_05ms">32768</measurement>
+                <measurement code="QRS_TimeOff_05ms">32768</measurement>
+                <measurement code="RR_Distance_05ms">1600</measurement>
+              </measurements>
+            </event>
+            <event position="4019">
+              <classification code="eventUnknown"/>
+              <measurements>
+                <measurement code="T_TimeOff_05ms">32768</measurement>
+                <measurement code="BSA_Group_Idx">0</measurement>
+                <measurement code="QRS_TimeOn_05ms">32768</measurement>
+                <measurement code="QRS_TimeOff_05ms">32768</measurement>
+                <measurement code="RR_Distance_05ms">1444</measurement>
+              </measurements>
+            </event>
+            <event position="4388">
+              <classification code="eventUnknown"/>
+              <measurements>
+                <measurement code="T_TimeOff_05ms">32768</measurement>
+                <measurement code="BSA_Group_Idx">0</measurement>
+                <measurement code="QRS_TimeOn_05ms">32768</measurement>
+                <measurement code="QRS_TimeOff_05ms">32768</measurement>
+                <measurement code="RR_Distance_05ms">1476</measurement>
+              </measurements>
+            </event>
+            <event position="4618">
+              <classification code="eventUnknown"/>
+              <measurements>
+                <measurement code="T_TimeOff_05ms">32768</measurement>
+                <measurement code="BSA_Group_Idx">0</measurement>
+                <measurement code="QRS_TimeOn_05ms">32768</measurement>
+                <measurement code="QRS_TimeOff_05ms">32768</measurement>
+                <measurement code="RR_Distance_05ms">920</measurement>
+              </measurements>
+            </event>
+            <event position="5018">
+              <classification code="eventUnknown"/>
+              <measurements>
+                <measurement code="T_TimeOff_05ms">32768</measurement>
+                <measurement code="BSA_Group_Idx">0</measurement>
+                <measurement code="QRS_TimeOn_05ms">32768</measurement>
+                <measurement code="QRS_TimeOff_05ms">32768</measurement>
+                <measurement code="RR_Distance_05ms">1600</measurement>
+              </measurements>
+            </event>
+            <event position="5379">
+              <classification code="eventUnknown"/>
+              <measurements>
+                <measurement code="T_TimeOff_05ms">32768</measurement>
+                <measurement code="BSA_Group_Idx">0</measurement>
+                <measurement code="QRS_TimeOn_05ms">32768</measurement>
+                <measurement code="QRS_TimeOff_05ms">32768</measurement>
+                <measurement code="RR_Distance_05ms">1444</measurement>
+              </measurements>
+            </event>
+            <event position="5748">
+              <classification code="eventUnknown"/>
+              <measurements>
+                <measurement code="T_TimeOff_05ms">32768</measurement>
+                <measurement code="BSA_Group_Idx">0</measurement>
+                <measurement code="QRS_TimeOn_05ms">32768</measurement>
+                <measurement code="QRS_TimeOff_05ms">32768</measurement>
+                <measurement code="RR_Distance_05ms">1476</measurement>
+              </measurements>
+            </event>
+            <event position="5978">
+              <classification code="eventUnknown"/>
+              <measurements>
+                <measurement code="T_TimeOff_05ms">32768</measurement>
+                <measurement code="BSA_Group_Idx">0</measurement>
+                <measurement code="QRS_TimeOn_05ms">32768</measurement>
+                <measurement code="QRS_TimeOff_05ms">32768</measurement>
+                <measurement code="RR_Distance_05ms">920</measurement>
+              </measurements>
+            </event>
+            <event position="6378">
+              <classification code="eventUnknown"/>
+              <measurements>
+                <measurement code="T_TimeOff_05ms">32768</measurement>
+                <measurement code="BSA_Group_Idx">0</measurement>
+                <measurement code="QRS_TimeOn_05ms">32768</measurement>
+                <measurement code="QRS_TimeOff_05ms">32768</measurement>
+                <measurement code="RR_Distance_05ms">1600</measurement>
+              </measurements>
+            </event>
+            <event position="6739">
+              <classification code="eventUnknown"/>
+              <measurements>
+                <measurement code="T_TimeOff_05ms">32768</measurement>
+                <measurement code="BSA_Group_Idx">0</measurement>
+                <measurement code="QRS_TimeOn_05ms">32768</measurement>
+                <measurement code="QRS_TimeOff_05ms">32768</measurement>
+                <measurement code="RR_Distance_05ms">1444</measurement>
+              </measurements>
+            </event>
+            <event position="7108">
+              <classification code="eventUnknown"/>
+              <measurements>
+                <measurement code="T_TimeOff_05ms">32768</measurement>
+                <measurement code="BSA_Group_Idx">0</measurement>
+                <measurement code="QRS_TimeOn_05ms">32768</measurement>
+                <measurement code="QRS_TimeOff_05ms">32768</measurement>
+                <measurement code="RR_Distance_05ms">1476</measurement>
+              </measurements>
+            </event>
+            <event position="7338">
+              <classification code="eventUnknown"/>
+              <measurements>
+                <measurement code="T_TimeOff_05ms">32768</measurement>
+                <measurement code="BSA_Group_Idx">0</measurement>
+                <measurement code="QRS_TimeOn_05ms">32768</measurement>
+                <measurement code="QRS_TimeOff_05ms">32768</measurement>
+                <measurement code="RR_Distance_05ms">920</measurement>
+              </measurements>
+            </event>
+          </eventTable>
+        </diagnosticStep>
+        <diagnosticStep name="globalResults">
+          <measurements>
+            <measurement code="HR_bpm">90</measurement>
+          </measurements>
+        </diagnosticStep>
+        <diagnosticStep name="HrvAnalysis">
+          <measurements>
+            <measurement code="AvgHR_bpm">90</measurement>
+            <measurement code="AvgRR_ms">668</measurement>
+            <measurement code="pRR50_percentage">77</measurement>
+            <measurement code="MinRR_ms">460</measurement>
+            <measurement code="MaxRR_ms">800</measurement>
+          </measurements>
+        </diagnosticStep>
+        <diagnosticStep name="pacemakerAnalysis">
+          <eventTable type="Pacing"/>
+        </diagnosticStep>
+        <analysedDatetime>2025-01-10T18:27:33</analysedDatetime>
+      </analysis>
+    </examination>
+  </examinations>
+</BtlXmlNg>
