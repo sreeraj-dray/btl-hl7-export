@@ -51,7 +51,9 @@
 	<!-- Other Hl7 Message generation controls -->
 	<ConfigItem id="11" name="UseSeperateObxEcgMeas">Yes</ConfigItem>  <!-- Yes or No, Yes will send each measurment in its own OBX segment -->
 	<ConfigItem id="12" name="ObxResultStatus">F</ConfigItem>  <!-- OBX.11: P = Preliminary, F = Final, C = Corrected -->
-	
+	<ConfigItem id="13" name="OrderStatus">CM</ConfigItem> <!-- ORC.5: CM = Completed (default), F = Finished -->
+	<ConfigItem id="14" name="OrderType">ECG</ConfigItem> <!-- OBR.4: Default exam type used for matching and export -->
+
 	
 
   </btlHl7PdfExportConfig>

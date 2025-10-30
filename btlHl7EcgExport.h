@@ -276,6 +276,13 @@ typedef struct BtlHl7Export {
    // int allowUnorderedExport;
     char enSepObx4EcgMeas; // 0 means send all measurment in one OBX segment (default), 1 means send each measurment in seprate OBX
     char obxResultStatusStr[BTLHL7_EXP_OBX_RESULT_STATUS_LEN];
+    char orderStatusStr[8];  // ORC-5: default "CM", configurable (e.g. "F")   
+    char orderType[64];   // Examination Type, default = "ECG"
+  char orderRequestedTimeStr[64];   // OBR-6 (requested time from ProtocolExtraData)
+  char examPerformedTimeStr[64];    // OBR-7 (createdDatetime from btlXmlNG)
+  char orderTransactionTimeStr[64]; // ORC-9 (Date/Time of Transaction)
+
+
 } BtlHl7Export_t;
 
 typedef struct BtlHl7ExpPidData {
@@ -357,7 +364,8 @@ void btlHl7ExportPrintf(int logLevel,  char* format, ...);
     int btlHl7ExpSetObxResultStatus(BtlHl7Export_t* pHl7Exp, char* pVal);
     int btlHl7ExpSendOrderCancelled(BtlHl7Export_t* pHl7Exp, char* pProtocolExtraData, int protocolExtraDataLen);
     int btlHl7ExpSetOrderControl(BtlHl7Export_t* pHl7Exp, char* orderControl);
-
+    int btlHl7ExpSetOrderStatus(BtlHl7Export_t* pHl7Exp,  char* orderStatus);
+    int btlHl7ExpSetOrderType(BtlHl7Export_t* pHl7Exp, char* examType);
     //#################### Internal functions  ##################
 
     void btlHl7PerformExport(BtlHl7Export_t* pHl7Exp);
@@ -379,5 +387,6 @@ void btlHl7ExportPrintf(int logLevel,  char* format, ...);
     char* btlHl7ExpPutPidToMsg(char* outBuf, int* pOutBufRemaining, btlHl7ExpPidData_t* pPidData, int* pErrStat);
     char* btlHl7ExpGetMatchedString(char* inStr, char** matchStrings, int inStrLen);
     void _btlHl7SendCancel(BtlHl7Export_t* pHl7Exp);
+    int btlHl7ExpConvertIsoToHl7Ts(char* iso_timestamp, char* hl7_timestamp_out, size_t buffer_size);
     //END OF .h FILE
 #endif // BTL_HL7_ECG_EXPORT_H 

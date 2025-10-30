@@ -58,6 +58,19 @@ int btlHl7BuildMinimalFromXmlNg(BtlHl7Export_t* pHl7Exp) {
         xmlFreeDoc(doc);
         BTLHL7EXP_ERR("BTLHL7EXP: Error: failed to parse BTL XMLng!\n");
         pHl7Exp->exportStatus = BTLHL7EXP_STATUS_XMLNG_ERR2;
+
+         // Check if PED (ProtocolExtraData) is available
+    if (pHl7Exp->protocolExtraDataLen > 0) {
+        BTLHL7EXP_DBUG1("BTLHL7EXP: Proceeding with PDF OBX only (PED available, XML missing)\n");
+
+        // OBR-6 should still come from PED
+        // OBR-7 (examPerformedTimeStr) must be blank
+        pHl7Exp->examPerformedTimeStr[0] = '\0';
+
+        // Continue with OBX generation (PDF report only)
+        return btlHl7ParseProtocolExtraData(pHl7Exp);
+    }
+
         return -1;  //Abort
     }
 
@@ -125,47 +138,47 @@ int btlHl7BuildMinimalFromXmlNg(BtlHl7Export_t* pHl7Exp) {
 
    
    
-   /* ---------------- ORC Segment ---------------- 
-    if (pHl7Exp->protocolExtraDataLen > 0)  //  Only add if PED exists
+   //---------------- ORC Segment ---------------- 
     {
-        nCharWritten = snprintf(outBuf, outBufRemaining,
-            "ORC|%s|%s|%s|||||||\r",
-            pHl7Exp->orderControl[0] ? pHl7Exp->orderControl : "RE",
-            pHl7Exp->placerOrderNumber[0] ? pHl7Exp->placerOrderNumber : "",
-            pHl7Exp->fillerOrderNumber[0] ? pHl7Exp->fillerOrderNumber : "");
 
-        if (nCharWritten < 0) {
-            xmlFreeDoc(doc);
-            return -1;
+            // No PED → ORC-9 fallback from <createdDatetime>
+            nCharWritten = snprintf(outBuf, outBufRemaining,
+                "ORC|%s|%s|%s||||||||%s\r",
+                pHl7Exp->orderControl[0] ? pHl7Exp->orderControl : "RE",
+                 "",
+                pHl7Exp->fillerOrderNumber[0] ? pHl7Exp->fillerOrderNumber : "",
+                pHl7Exp->examPerformedTimeStr[0] ? pHl7Exp->examPerformedTimeStr : "");
+        
+                if (nCharWritten < 0) {
+                    xmlFreeDoc(doc);
+                    return -1;
+                }
+
+            outBuf += nCharWritten;
+            outBufRemaining -= nCharWritten;
+    }
+
+
+        /* ---------------- OBR Segment ---------------- */
+        {
+
+            nCharWritten = snprintf(outBuf, outBufRemaining,
+                "OBR|1|%s|%s|^%s||%s|%s\r",
+                pHl7Exp->placerOrderNumber[0] ? pHl7Exp->placerOrderNumber : "",
+                pHl7Exp->fillerOrderNumber[0] ? pHl7Exp->fillerOrderNumber : "",
+                pHl7Exp->universalServiceId[0] ? pHl7Exp->universalServiceId : pHl7Exp->orderType,
+                pHl7Exp->orderRequestedTimeStr[0] ? pHl7Exp->orderRequestedTimeStr : "",
+                pHl7Exp->examPerformedTimeStr[0] ? pHl7Exp->examPerformedTimeStr : "");
+
+
+            if (nCharWritten < 0) {
+                xmlFreeDoc(doc);
+                return -1;
+            }
+            outBuf += nCharWritten;
+            outBufRemaining -= nCharWritten;
         }
-
-        outBuf += nCharWritten;
-        outBufRemaining -= nCharWritten;
-    }
-    else {
-        //  Skip ORC segment when PED not present
-        BTLHL7EXP_DBUG1("BTLHL7EXP: Skipping ORC segment (no PED data present)\n");
-    }
-    */
-
-    /* ---------------- OBR Segment ---------------- */
-    {
-       
-        nCharWritten = snprintf(outBuf, outBufRemaining,
-            "OBR|1|%s|%s|%s|||%s\r",
-            pHl7Exp->placerOrderNumber[0] ? pHl7Exp->placerOrderNumber : "",
-            pHl7Exp->fillerOrderNumber[0] ? pHl7Exp->fillerOrderNumber : "",
-            pHl7Exp->universalServiceId[0] ? pHl7Exp->universalServiceId : "^ECG",
-            pHl7Exp->msgTimestampStrBuf);
-
-        if (nCharWritten < 0) {
-            xmlFreeDoc(doc);
-            return -1;
-        }
-        outBuf += nCharWritten;
-        outBufRemaining -= nCharWritten;
-    }
-
+    
    
 
     /* ---------------- Save pointers & cleanup ---------------- */
@@ -460,7 +473,8 @@ int btlhl7ExpParseXmlNgAverageBeat(xmlNode* pDiagnosticStepNode)
 //#################################################################################################
 
 int btlHl7ParseXmlNg(BtlHl7Export_t* pHl7Exp) {
-   
+    int retVal;
+
     if (pHl7Exp->diagnosticsFilePath[0]== 0) {
         BTLHL7EXP_DBUG0("BTLHL7EXP:No diagnostics btlxmlng given!\n");
         return -1;
@@ -477,10 +491,37 @@ int btlHl7ParseXmlNg(BtlHl7Export_t* pHl7Exp) {
         BTLHL7EXP_ERR("BTLHL7EXP: Error: Empty diagnostics XML!\n");
         xmlFreeDoc(doc);
         return -2; // XmlNg parse error
-}
-
+    }
     memset(g_BtlHl7ExpXmlNgAttributesParsed, 0, sizeof(g_BtlHl7ExpXmlNgAttributesParsed));
+    // ---------------- Extract createdDatetime for OBR-7 (exam performed time) ----------------
+do {
+    xmlNode* pHeaderNode = btlhl7ExpGetXmlNode(root, (xmlChar*)"header", NULL, NULL);
+    if (pHeaderNode != NULL) {
+        xmlNode* pCreatedNode = btlhl7ExpGetXmlNode(pHeaderNode, (xmlChar*)"createdDatetime", NULL, NULL);
+        if (pCreatedNode != NULL && pCreatedNode->children && pCreatedNode->children->content) {
+            // btlxmlng has date and time in Iso formate with no utc offset so convert it into HL7 format
+             
+            char hl7_timestamp_out[24];
+            retVal = btlHl7ExpConvertIsoToHl7Ts(pCreatedNode->children->content, hl7_timestamp_out, sizeof(hl7_timestamp_out));
+            if (retVal == 0) {
+                // copy safely into pHl7Exp->examPerformedTimeStr
+                strncpy(pHl7Exp->examPerformedTimeStr,
+                    hl7_timestamp_out,
+                    sizeof(hl7_timestamp_out) - 1);
+                pHl7Exp->examPerformedTimeStr[sizeof(pHl7Exp->examPerformedTimeStr) - 1] = '\0';
 
+                BTLHL7EXP_DBUG1("BTLHL7EXP: Parsed header createdDatetime -> examPerformedTimeStr = [%s]\n",
+                    pHl7Exp->examPerformedTimeStr);
+            }
+            else {
+                pHl7Exp->examPerformedTimeStr[0] = 0;
+                BTLHL7EXP_ERR("BTLHL7EXP:ERROR:BTLXMLNG:could not parse createdDatetime\n");
+            }
+        }
+    }
+} while (0);
+
+   
     // parse out examinations/examination :type=
     xmlNode* pExaminationsNode = btlhl7ExpGetXmlNode( root, "examinations", NULL, NULL);
     if (pExaminationsNode == NULL) {
@@ -490,6 +531,32 @@ int btlHl7ParseXmlNg(BtlHl7Export_t* pHl7Exp) {
     if (pExaminationNode == NULL) {
         return -2;
     }
+    //############################################################################################
+    {
+    xmlChar* pExamGuid = xmlGetProp(pExaminationNode, (xmlChar*)"guid");
+    if (pExamGuid != NULL) {
+        // Copy into export structure
+        char cleanedGuid[128] = {0};
+        int j = 0;
+        for (int i = 0; pExamGuid[i] != '\0' && j < sizeof(cleanedGuid) - 1; i++) {
+            if (pExamGuid[i] != '{' && pExamGuid[i] != '}')
+                cleanedGuid[j++] = pExamGuid[i];
+        }
+
+        strncpy(pHl7Exp->fillerOrderNumber, cleanedGuid, sizeof(pHl7Exp->fillerOrderNumber) - 1);
+        pHl7Exp->fillerOrderNumber[sizeof(pHl7Exp->fillerOrderNumber) - 1] = '\0';
+
+        BTLHL7EXP_DBUG1("BTLHL7EXP: Parsed examination guid -> fillerOrderNumber = [%s]\n",
+                         pHl7Exp->fillerOrderNumber);
+
+        xmlFree(pExamGuid);
+    } else {
+        pHl7Exp->fillerOrderNumber[0] = 0;
+        BTLHL7EXP_DBUG0("BTLHL7EXP: No examination guid found in XML\n");
+    }
+    }
+
+
     //we got examination node, now check the type
     xmlChar* pExamTypeVal = xmlGetProp(pExaminationNode, "type");
     if (pExamTypeVal == NULL) {
@@ -565,45 +632,10 @@ int btlHl7ParseXmlNg(BtlHl7Export_t* pHl7Exp) {
             
         
     } while (0);//do (while) block processing result node 
+
     xmlFreeDoc(doc);
     return 0;
     }
-
-        // ---------------------------------------------------------------------
-        // Helper function: extract <createdDatetime> from BTL XML NG header
-        // ---------------------------------------------------------------------
-        void btlHl7GetCreatedDatetime(BtlHl7Export_t* pHl7Exp, char* outBuf, size_t bufSize)
-        {
-            if (!pHl7Exp || !outBuf || bufSize == 0) return;
-
-            xmlDoc* doc = xmlReadFile(pHl7Exp->diagnosticsFilePath, NULL, 0);
-            if (!doc) {
-                outBuf[0] = '\0';
-                return;
-            }
-
-            xmlNode* root = xmlDocGetRootElement(doc);
-            if (!root) {
-                xmlFreeDoc(doc);
-                outBuf[0] = '\0';
-                return;
-            }
-
-            // Get the createdDatetime attribute from the XML root element
-            xmlChar* pCreated = xmlGetProp(root, (xmlChar*)"createdDatetime");
-            if (pCreated) {
-                strncpy(outBuf, (char*)pCreated, bufSize - 1);
-                outBuf[bufSize - 1] = '\0';
-                xmlFree(pCreated);
-            }
-            else {
-                outBuf[0] = '\0';
-            }
-
-            xmlFreeDoc(doc);
-        }
-
-
 
         // ---------------------------------------------------------------------
         // Array of attribute IDs to include in HL7 OBX measurement output

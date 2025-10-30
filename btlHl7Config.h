@@ -28,6 +28,8 @@ typedef enum {
     EXP_CFG_RECEIVING_FACILITY = 10,
     EXP_CFG_USE_SEP_OBX = 11,
     EXP_CFG_OBX_RESULT_STATUS = 12,
+    EXP_CFG_ORDER_STATUS = 13,
+    EXP_CFG_ORDER_TYPE = 14, 
 
     EXP_CFG_LAST_ID
 } Hl7PdfExportConfigId_t;

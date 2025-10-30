@@ -43,6 +43,7 @@ int btlHl7ParseProtocolExtraData(BtlHl7Export_t* pHl7Exp){
     char* outBuf = pHl7Exp->pHl7BufNext;
     int outBufRemaining = pHl7Exp->outputHl7SizeLeft;
     int xmlSize = pHl7Exp->protocolExtraDataLen;
+    pHl7Exp->universalServiceId[0] = 0;
 
     xmlDoc* doc = xmlReadMemory(xml, xmlSize, "noname.xml", NULL, 0);
     if (!doc) {
@@ -69,7 +70,7 @@ int btlHl7ParseProtocolExtraData(BtlHl7Export_t* pHl7Exp){
         char* pHl7Version = pHl7Exp->hl7VersionStr;
 
         if (strcmp(id, "MSH") == 0) {
-
+#ifdef UNDEF  // sending facility and application always comes from xmlconfiguration , hence below code is diabled      
             // #### MODIFIED: parse SendingApplication / SendingFacility into comp1, comp2
             char* xmlSendingApp = btlHl7GetNodeText(node, "SendingApplication");
             char* xmlSendingFac = btlHl7GetNodeText(node, "SendingFacility");
@@ -92,7 +93,7 @@ int btlHl7ParseProtocolExtraData(BtlHl7Export_t* pHl7Exp){
                         BTL_HL7_NAME_BUF_SIZE);
                 }
             }
-
+#endif
                 //if user has set either/both of recv appln, facility, then use those,else
                     //use the values from protocol extra data if present, else empty string
             if (pReceivingApp[0] != 0 || pReceivingFac[0] != 0) {
@@ -317,28 +318,33 @@ int btlHl7ParseProtocolExtraData(BtlHl7Export_t* pHl7Exp){
 #endif
         }
                 else if (strcmp(id, "ORC") == 0) {
-                    char* orderControl = btlHl7GetNodeText(node, "OrderControl");
-                    char* placer = btlHl7GetNodeText(node, "PlacerOrderNumber");
-                    char* filler = btlHl7GetNodeText(node, "FillerOrderNumber");
+                     char* orderControl = btlHl7GetNodeText(node, "OrderControl");
+                     char* placer = btlHl7GetNodeText(node, "PlacerOrderNumber");
+                    // char* filler = btlHl7GetNodeText(node, "FillerOrderNumber");
+                   //  char* reqTime = btlHl7GetNodeText(node, "RequestedDateTime");  // for ORC-9, we should use the examination conducted time from btlxmlNg
+                     char* orderStatus = (pHl7Exp->orderStatusStr[0] != '\0')
+                                ? pHl7Exp->orderStatusStr
+                                : "CM";  // default  ORC-5 = CM (Complete). 'F' can be set via XML or API
 
-                    
 
                     if (placer && placer[0]) {
                         strncpy_s(pHl7Exp->placerOrderNumber, sizeof(pHl7Exp->placerOrderNumber), placer, _TRUNCATE);
                     }
-                    if (filler && filler[0]) {
-                        strncpy_s(pHl7Exp->fillerOrderNumber, sizeof(pHl7Exp->fillerOrderNumber), filler, _TRUNCATE);
+                    else {
+                        pHl7Exp->placerOrderNumber[0] = 0;
                     }
-
                     const char* ocField = (pHl7Exp->_orderControl[0]) ? pHl7Exp->_orderControl : "RE";
                     const char* placerField = (pHl7Exp->placerOrderNumber[0]) ? pHl7Exp->placerOrderNumber : "";
                     const char* fillerField = (pHl7Exp->fillerOrderNumber[0]) ? pHl7Exp->fillerOrderNumber : "";
 
                     nCharWritten = snprintf(outBuf, outBufRemaining,
-                        "ORC|%s|%s|%s|||||||\r",
+                        "ORC|%s|%s|%s||%s|||||%s\r",
                         ocField,
                         placerField,
-                        fillerField);
+                        fillerField,
+                        orderStatus,
+                        pHl7Exp->examPerformedTimeStr[0] ? pHl7Exp->examPerformedTimeStr : "");
+
                     if (nCharWritten < 0) {
                         printf("BTLHL7EXP: Error: Failed HL7 buffer write-ORC!\n");
                         pHl7Exp->exportStatus = BTLHL7EXP_STATUS_PROCESSING_ERR;
@@ -361,58 +367,51 @@ int btlHl7ParseProtocolExtraData(BtlHl7Export_t* pHl7Exp){
                     char* filler = btlHl7GetNodeText(node, "FillerOrderNumber");
                     char* usid = btlHl7GetNodeText(node, "UniversalServiceId");
                     char* reqTime = btlHl7GetNodeText(node, "RequestedDateTime");
-                    char* obsTime = btlHl7GetNodeText(node, "ObservationDateTime");
-
+                  //  char* obsTime = btlHl7GetNodeText(node, "ObservationDateTime");// this should come from btlxmlNg not PEd
+                    pHl7Exp->placerOrderNumber[0] = '\0';
                     /* Save to struct for reuse later (if ORC didn’t have it) */
-                    if (placer && placer[0] && pHl7Exp->placerOrderNumber[0] == '\0')
-                        strncpy_s(pHl7Exp->placerOrderNumber, sizeof(pHl7Exp->placerOrderNumber), placer, _TRUNCATE);
-                    if (filler && filler[0] && pHl7Exp->fillerOrderNumber[0] == '\0')
-                        strncpy_s(pHl7Exp->fillerOrderNumber, sizeof(pHl7Exp->fillerOrderNumber), filler, _TRUNCATE);
+                    if (placer && placer[0]) {
+                       strncpy_s(pHl7Exp->placerOrderNumber, sizeof(pHl7Exp->placerOrderNumber), placer, _TRUNCATE);
+                    }
+                      pHl7Exp->universalServiceId[0] = '\0';
                     if (usid && usid[0])
                         strncpy_s(pHl7Exp->universalServiceId, sizeof(pHl7Exp->universalServiceId), usid, _TRUNCATE);
+                   // if (reqTime && reqTime[0])
+                   //     strncpy_s(pHl7Exp->requestedDateTime, sizeof(pHl7Exp->requestedDateTime), reqTime, _TRUNCATE);
+                    //if (obsTime && obsTime[0])
+                      //  strncpy_s(pHl7Exp->observationDateTime, sizeof(pHl7Exp->observationDateTime), obsTime, _TRUNCATE);
+                    pHl7Exp->orderRequestedTimeStr[0] = 0;
                     if (reqTime && reqTime[0])
-                        strncpy_s(pHl7Exp->requestedDateTime, sizeof(pHl7Exp->requestedDateTime), reqTime, _TRUNCATE);
-                    if (obsTime && obsTime[0])
-                        strncpy_s(pHl7Exp->observationDateTime, sizeof(pHl7Exp->observationDateTime), obsTime, _TRUNCATE);
+                        strncpy_s(pHl7Exp->orderRequestedTimeStr, sizeof(pHl7Exp->orderRequestedTimeStr), reqTime, _TRUNCATE);
+                   
+                       
 
-                    const char* placerField = (pHl7Exp->placerOrderNumber[0]) ? pHl7Exp->placerOrderNumber : "";
+
+                   const char* placerField = (pHl7Exp->placerOrderNumber[0]) ? pHl7Exp->placerOrderNumber : "";
                     const char* fillerField = (pHl7Exp->fillerOrderNumber[0]) ? pHl7Exp->fillerOrderNumber : "";
-                    const char* serviceIdField = (pHl7Exp->universalServiceId[0]) ? pHl7Exp->universalServiceId : "";
-
-                    /*
+                 // const char* serviceIdField = (pHl7Exp->universalServiceId[0])? pHl7Exp->universalServiceId  : (pHl7Exp->orderType[0] ? pHl7Exp->orderType : "");
+                    char serviceIdField[128] = "";
                     
-                                        // OBR-6: Requested time (from PED)
-                        const char* requestedTime = pHl7Exp->requestedDateTime[0]
-                            ? pHl7Exp->requestedDateTime
-                            : "";
+                    if (pHl7Exp->universalServiceId[0]) {
+                        // from protocolextraData
+                        // If UniversalServiceId exists, use it directly (e.g., from XML)
+                        strncpy_s(serviceIdField, sizeof(serviceIdField), pHl7Exp->universalServiceId, _TRUNCATE);
+                    }
+                    else if (pHl7Exp->orderType[0]) {
+                        // from configuration xml
+                        // If not present, use OrderType with caret prefix (e.g., ^ECG)
+                        snprintf(serviceIdField, sizeof(serviceIdField), "^%s", pHl7Exp->orderType);
+                    }
 
-                        // OBR-7: Actual exam performed time (from <createdDatetime> in XML NG)
-                        char createdTime[64] = "";
-                        btlHl7GetCreatedDatetime(pHl7Exp, createdTime, sizeof(createdTime));
-
-                        // Build the OBR line with both times
+               
+                    if (pHl7Exp->orderRequestedTimeStr[0]) {
                         nCharWritten = snprintf(outBuf, outBufRemaining,
                             "OBR|1|%s|%s|%s||%s|%s\r",
                             placerField,
                             fillerField,
                             serviceIdField,
-                            requestedTime,  // OBR-6: order request time
-                            createdTime);   // OBR-7: actual exam performed time
-
-
-                    */
-
-
-
-
-                    if (pHl7Exp->requestedDateTime[0]) {
-                        nCharWritten = snprintf(outBuf, outBufRemaining,
-                            "OBR|1|%s|%s|%s||%s|%s\r",
-                            placerField,
-                            fillerField,
-                            serviceIdField,
-                            pHl7Exp->requestedDateTime,
-                            pHl7Exp->observationDateTime);
+                            pHl7Exp->orderRequestedTimeStr,
+                            pHl7Exp->examPerformedTimeStr[0] ? pHl7Exp->examPerformedTimeStr : pHl7Exp->msgTimestampStrBuf);
                     }
                     else {
                         nCharWritten = snprintf(outBuf, outBufRemaining,
@@ -420,7 +419,7 @@ int btlHl7ParseProtocolExtraData(BtlHl7Export_t* pHl7Exp){
                             placerField,
                             fillerField,
                             serviceIdField,
-                            pHl7Exp->msgTimestampStrBuf);
+                            pHl7Exp->examPerformedTimeStr[0] ? pHl7Exp->examPerformedTimeStr : pHl7Exp->msgTimestampStrBuf); //observationDateTimeStr
                     }
 
                     if (nCharWritten < 0) {

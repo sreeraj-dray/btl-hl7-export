@@ -11,12 +11,12 @@
 #include "btlHl7Config.h"
 //TEST configuration - define only one below
 
-//#define BTLHL7EXP_TESTCASE_USE_EXDATA 1
+#define BTLHL7EXP_TESTCASE_USE_EXDATA 1
 //#define BTLHL7EXP_TESTCASE_USE_EXDATA_WITH_USER_RECV_APP 1
 //#define BTLHL7EXP_TESTCASE_NO_EXDATA_DEF_VER_2P2 1
 //#define BTLHL7EXP_TESTCASE_NO_EXDATA_USER_SET_VER_APP_FAC 1
- // #define BTLHL7EXP_TESTCASE_SERVER_STATUS_CHECK 1
-#define BTLHL7EXP_TESTCASE_SEND_CANCEL 1
+  //#define BTLHL7EXP_TESTCASE_SERVER_STATUS_CHECK 1
+//#define BTLHL7EXP_TESTCASE_SEND_CANCEL 1
 
 #define BTLHL7EXP_TESTCASE_LOAD_CFG_FROM_XML 1
 
@@ -107,8 +107,8 @@ char gExtraData2[] ="<ProtocolExtraData Name=\"HL7\">\
 <Segment id=\"OBR\">\
 <PlacerOrderNumber>e72d211a-e90f-4ba4-9090-a2af7e08bbed</PlacerOrderNumber>\
 <FillerOrderNumber></FillerOrderNumber>\
-<UniversalServiceId>^ECG</UniversalServiceId>\
-<RequestedDateTime></RequestedDateTime>\
+<UniversalServiceId></UniversalServiceId>\
+<RequestedDateTime>20250405192013</RequestedDateTime>\
 <ObservationDateTime></ObservationDateTime>\
 </Segment>\
 </ProtocolExtraData>";
@@ -236,7 +236,7 @@ int main() {
     extraDataSize = (int)strlen(gExtraData2);
     //runExportCase(pHl7Exp, gPdfFileName, gBtlXmlNgFileName, gExtraData2, extraDataSize, "TESTCASE : Config from Xml along with ExtraData");
 
-   // runExportCase(pHl7Exp, gPdfFileName, gBtlXmlNgFileName, 0, 0, "TESTCASE : Config from Xml + NO ExtraData");
+    //runExportCase(pHl7Exp, gPdfFileName, gBtlXmlNgFileName, 0, 0, "TESTCASE : Config from Xml + NO ExtraData");
     // new — pass the extra data buffer + length
   // runExportCase(pHl7Exp, gPdfFileName, gBtlXmlNgFileName, gExtraData2, (int)strlen(gExtraData2), "TESTCASE : Config from Xml + ExtraData");
 
@@ -244,7 +244,14 @@ int main() {
  //  runExportCase(pHl7Exp, gPdfFileName, 0 , gExtraData2, (int)strlen(gExtraData2), "TESTCASE : Config from Xml + ExtraData");
 
     //goto test_end;
-
+    
+     //runExportCase(pHl7Exp,
+               //   gPdfFileName,
+               ////   NULL,                 // Pass NULL for BtlXmlNg file
+                //  gExtraData2,
+                //  (int)strlen(gExtraData2),
+                 // "CASE 2 - PED only (No XML)");
+                  
 #endif
    // btlHl7ExpSetDebugLevel(pHl7Exp, 1);   // or higher
 

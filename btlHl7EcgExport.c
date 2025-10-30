@@ -162,7 +162,9 @@ int btlHl7ExpSetSrvIp(BtlHl7Export_t* pHl7Exp, char* ipAddrStr, uint16_t port) {
 }
 
 int btlHl7ExpSetProcessingId(BtlHl7Export_t* pHl7Exp, char* procId) {
-    if (!pHl7Exp || !procId) return -1;
+    if (!pHl7Exp || !procId) {
+        return -1;
+    }
 
     if (strcmp(procId, "P") == 0 || strcmp(procId, "T") == 0 || strcmp(procId, "D") == 0) {
         strncpy_s(pHl7Exp->processingId, sizeof(pHl7Exp->processingId), procId, _TRUNCATE);
@@ -173,7 +175,9 @@ int btlHl7ExpSetProcessingId(BtlHl7Export_t* pHl7Exp, char* procId) {
 
 
 int btlHl7ExpSetObxResultStatus(BtlHl7Export_t* pHl7Exp, char* pVal) {
-    if (!pHl7Exp || !pVal) return -1;
+    if (!pHl7Exp || !pVal) {
+        return -1;
+    }
 
     if (strcmp(pVal, "P") == 0 || strcmp(pVal, "F") == 0 || strcmp(pVal, "C") == 0) {
         strncpy_s(pHl7Exp->obxResultStatusStr, sizeof(pHl7Exp->obxResultStatusStr), pVal, _TRUNCATE);
@@ -181,6 +185,24 @@ int btlHl7ExpSetObxResultStatus(BtlHl7Export_t* pHl7Exp, char* pVal) {
     }
     return -2; // invalid value
 }
+
+int btlHl7ExpSetOrderStatus(BtlHl7Export_t* pHl7Exp, char* orderStatus)
+{
+    if (!pHl7Exp || !orderStatus) {
+        return -1;
+    }
+
+    // Allow CM (modern) and F (legacy)
+    if (strcmp(orderStatus, "CM") == 0 || strcmp(orderStatus, "F") == 0) {
+        strncpy_s(pHl7Exp->orderStatusStr, sizeof(pHl7Exp->orderStatusStr), orderStatus, _TRUNCATE);
+        return 0;
+    }
+
+      return -2; // invalid order status
+}
+
+
+
 
 //#######################################################################
 
@@ -194,6 +216,10 @@ int btlHl7ExportInit(BtlHl7Export_t* pHl7Exp, char* ipAddrStr, uint16_t port) {
     strncpy_s(pHl7Exp->processingId, sizeof(pHl7Exp->processingId), "P", _TRUNCATE); // default P = Production, MSH.11
     strncpy_s(pHl7Exp->obxResultStatusStr, sizeof(pHl7Exp->obxResultStatusStr), "P", _TRUNCATE); // OBX.11
     strncpy_s(pHl7Exp->orderControl, sizeof(pHl7Exp->orderControl), "RE", _TRUNCATE); // ORC.1 default to Results
+    strncpy_s(pHl7Exp->orderStatusStr, sizeof(pHl7Exp->orderStatusStr), "CM", _TRUNCATE);// ORC.5 
+    strncpy_s(pHl7Exp->orderType, sizeof(pHl7Exp->orderType), "ECG", _TRUNCATE);
+
+
 
    
 
@@ -456,6 +482,7 @@ void* btlHl7ExportThreadFunc(void* arg)
                 break;
             }
             // parse btlxmlng if avaliable 
+            memset(g_BtlHl7ExpXmlNgAttributesParsed, 0, sizeof(g_BtlHl7ExpXmlNgAttributesParsed));
            if (pHl7Exp->diagnosticsFilePath[0]!= 0) {
                xmlNgStat =  btlHl7ParseXmlNg(pHl7Exp);
             }
@@ -1483,12 +1510,12 @@ int btlHl7ExpSendOrderStatus(BtlHl7Export_t* pHl7Exp, char* orderControlCode) {
         orcSeg, '\0', '\0', &errStat);
 
     // --- OBR Segment ---
-    char obrSeg[256];
-    snprintf(obrSeg, sizeof(obrSeg), "OBR|1|%s|%s|ECG^Test\r",
-        pHl7Exp->placerOrderNumber,
-        pHl7Exp->fillerOrderNumber);
-    btlHl7ExpPutStrToMsg(pHl7Exp->pHl7BufNext, &pHl7Exp->outputHl7SizeLeft,
-        obrSeg, '\0', '\0', &errStat);
+    snprintf(orcSeg, sizeof(orcSeg),
+         "ORC|%s|%s|%s||||||||%s\r",
+         orderControlCode,
+         pHl7Exp->placerOrderNumber,
+         pHl7Exp->fillerOrderNumber,
+         pHl7Exp->orderTransactionTimeStr[0] ? pHl7Exp->orderTransactionTimeStr : "");
 
     pHl7Exp->hl7MsgSize = (int) strlen(pHl7Exp->outputHl7Buf);
 
@@ -1534,5 +1561,59 @@ int btlHl7ExpSetOrderControl(BtlHl7Export_t* pHl7Exp, char* orderControl) {
     strncpy_s(pHl7Exp->orderControl, BTLHL7EXP_ORC_ORDER_CONTROL_SIZE, orderControl, _TRUNCATE);
     return 0; 
 
+}
+int btlHl7ExpSetOrderType(BtlHl7Export_t* pHl7Exp, char* orderType) {
+    if (!pHl7Exp || !orderType) {
+        return -1;
+    }
+
+    strncpy_s(pHl7Exp->orderType, sizeof(pHl7Exp->orderType), orderType, _TRUNCATE);
+    pHl7Exp->orderType[sizeof(pHl7Exp->orderType) - 1] = '\0';
+    return 0;
+}
+
+/* @param buffer_size The size of the output buffer (must be at least 15 for YYYYMMDDHHMMSS\0).
+ /* @return int 0 on success, -1 on error (e.g., NULL pointers, insufficient buffer size).
+ */
+int btlHl7ExpConvertIsoToHl7Ts(char *iso_timestamp, char *hl7_timestamp_out, size_t buffer_size) {
+    if (iso_timestamp == NULL || hl7_timestamp_out == NULL) {
+        return -1; // Null pointer check
+    }
+
+    // HL7 DTM (YYYYMMDDHHMMSS) requires 14 characters plus the null terminator ('\0').
+    const size_t REQUIRED_LENGTH = 14; 
+    if (buffer_size < (REQUIRED_LENGTH + 1)) {
+        return -1; // Buffer too small
+    }
+
+    // Expected ISO 8601 format length without timezone (YYYY-MM-DDTHH:MM:SS) is 19 characters.
+    if (strlen(iso_timestamp) < 19) {
+        return -1; // Input string too short
+    }
+
+    // --- Core Conversion Logic ---
+
+    // 1. Copy Year (YYYY)
+    strncpy(hl7_timestamp_out, iso_timestamp, 4); 
+    
+    // 2. Copy Month (MM) - Skip '-' at index 4, start at index 5
+    strncpy(hl7_timestamp_out + 4, iso_timestamp + 5, 2); 
+    
+    // 3. Copy Day (DD) - Skip '-' at index 7, start at index 8
+    strncpy(hl7_timestamp_out + 6, iso_timestamp + 8, 2); 
+    
+    // 4. Copy Hour (HH) - Skip 'T' at index 10, start at index 11
+    strncpy(hl7_timestamp_out + 8, iso_timestamp + 11, 2); 
+    
+    // 5. Copy Minute (MM) - Skip ':' at index 13, start at index 14
+    strncpy(hl7_timestamp_out + 10, iso_timestamp + 14, 2); 
+    
+    // 6. Copy Second (SS) - Skip ':' at index 16, start at index 17
+    strncpy(hl7_timestamp_out + 12, iso_timestamp + 17, 2); 
+
+    // 7. Null-terminate the string
+    hl7_timestamp_out[14] = '\0'; 
+
+    return 0; // Success
 }
 

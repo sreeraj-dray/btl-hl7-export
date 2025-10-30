@@ -20,6 +20,15 @@ static char* resultStatusStrings[] = {
     NULL
 };
 
+// ---- Valid Order Status strings (for ORC.5) ----
+static char orderStatusStr1[] = { "CM" };
+static char orderStatusStr2[] = { "F" };
+static char* orderStatusStrings[] = {
+    orderStatusStr1,
+    orderStatusStr2,
+    NULL
+};
+
 
 int btlHl7ExpLoadXmlConfig(BtlHl7Export_t* pHl7Exp, char* xmlFilePath) {
     xmlDoc* doc = xmlReadFile(xmlFilePath, NULL, 0);
@@ -239,6 +248,33 @@ int btlHl7ExpLoadXmlConfig(BtlHl7Export_t* pHl7Exp, char* xmlFilePath) {
                                          
                     break;
                 } // case EXP_CFG_OBX_RESULT_STATUS
+
+                case EXP_CFG_ORDER_STATUS: {
+                    if (!valText) {
+                        break;
+                    }
+                  
+                    char* matchedStr = btlHl7ExpGetMatchedString((char*)valText, orderStatusStrings, (int)strlen((char*)valText));
+                    if (matchedStr == NULL) {
+                        // invalid input
+                        BTLHL7EXP_ERR("[BTLHL7EXP XML Config] ERROR: Invalid OrderStatus value (%s), must be CM or F\n", valText);
+                        break;
+                    }
+
+                    btlHl7ExpSetOrderStatus(pHl7Exp, matchedStr);
+                    BTLHL7EXP_DBUG1("[BTLHL7EXP XML Config] OrderStatus = %s\n", matchedStr);
+
+                    break;
+                } // case EXP_CFG_ORDER_STATUS
+
+                case EXP_CFG_ORDER_TYPE: {
+                    BTLHL7EXP_DBUG1("[BTLHL7EXP XML Config] OrderType = %s\n", valText);
+                    btlHl7ExpSetOrderType(pHl7Exp, (char*)valText);
+                    break;
+                }
+
+
+
 
 
                 default: {
