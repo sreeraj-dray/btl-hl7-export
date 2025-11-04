@@ -4,6 +4,8 @@
 #include "btlHl7XmlNg.h"
 #include "btlHl7XmlExtraData.h"
 #include "btlHl7ExpParseHl7.h"
+#include "btlHl7ExpSslCommon.h"
+
 
 //Note:
 //btlHl7ExportThreadFunc() is the thread that perfroms the export
@@ -19,12 +21,19 @@ void btlHl7RegisterLogCallback(BtlHl7LogCallback_t cb) {
     gBtlHl7LogCallbackFn = cb;
 }
 */
-
+int gDebugMarker1 = 0;
 //#######################################################################
 
-static void _btlHl7ExpCloseClientSocket(BtlHl7Export_t* pHl7Exp) {
+void _btlHl7ExpCloseClientSocket(BtlHl7Export_t* pHl7Exp) {
     if (pHl7Exp->client_socket == 0) {
         return;
+    }
+    if (pHl7Exp->sslEnable) {
+#ifdef BTLHL7EXP_SSL_EN
+        if (pHl7Exp->ssl || pHl7Exp->sslCtx) {
+            return;  //SSL active - do not close socket
+        }
+#endif
     }
 #ifdef BTL_HL7_FOR_WINDOWS
     closesocket(pHl7Exp->client_socket);
@@ -38,11 +47,15 @@ static void _btlHl7ExpCloseClientSocket(BtlHl7Export_t* pHl7Exp) {
 }  //_btlHl7ExpCloseClientSocket()
 
 //#######################################################################
-
+static int isIpAddressStr(const char* s) {
+    unsigned char buf[16];
+    return s && (inet_pton(AF_INET, s, buf) == 1 || inet_pton(AF_INET6, s, buf) == 1);
+}
 int btlHl7CheckIpAndPort(BtlHl7Export_t* pHl7Exp) {
-    if (strlen(pHl7Exp->srvIpAddrStr) < 7) {
-        //ip address must be atleast 7 characters : 1.1.1.1
-        BTLHL7EXP_ERR("BTLHL7EXP ERROR: Invalid IP address!\n");
+    //if (strlen(pHl7Exp->srvIpAddrStr) < 7) 
+    if(isIpAddressStr(pHl7Exp->srvIpAddrStr) == 0)
+    {
+        BTLHL7EXP_ERR("BTLHL7EXP ERROR: Invalid IP address!: %s\n", pHl7Exp->srvIpAddrStr);
         pHl7Exp->exportStatus = BTLHL7EXP_STATUS_ERR_IPADDR;
         return -1;
     }
@@ -54,7 +67,7 @@ int btlHl7CheckIpAndPort(BtlHl7Export_t* pHl7Exp) {
     pHl7Exp->clientSkAddr.sin_family = AF_INET;
     pHl7Exp->clientSkAddr.sin_port = htons(pHl7Exp->srvPort);
     if (inet_pton(AF_INET, pHl7Exp->srvIpAddrStr, &(pHl7Exp->clientSkAddr.sin_addr)) <= 0) {
-        BTLHL7EXP_ERR("BTLHL7EXP ERROR: Invalid IP address!\n");
+        BTLHL7EXP_ERR("BTLHL7EXP ERROR: Invalid IP address(2)!: %s\n", pHl7Exp->srvIpAddrStr);
         pHl7Exp->exportStatus = BTLHL7EXP_STATUS_ERR_IPADDR;
 
         _btlHl7ExpCloseClientSocket(pHl7Exp);
@@ -63,6 +76,8 @@ int btlHl7CheckIpAndPort(BtlHl7Export_t* pHl7Exp) {
 
     return 0;
 }  //btlHl7CheckIpAndPort()
+
+
 
 //#######################################################################
 
@@ -103,46 +118,88 @@ static int _btlHl7ExpConnectSrv(BtlHl7Export_t* pHl7Exp) {
         retVal =  ioctlsocket(pHl7Exp->client_socket, FIONBIO, &mode);
         int option = 1;
         if (setsockopt(pHl7Exp->client_socket, SOL_SOCKET, SO_REUSEADDR, (char*)&option, sizeof(option)) < 0) {
-            BTLHL7EXP_ERR("BTLHL7EXP ERROR: setsockopt SO_REUSEADDR failed: %d\n", WSAGetLastError());
-            return -1;
+            BTLHL7EXP_ERR("BTLHL7EXP WARNING: setsockopt SO_REUSEADDR failed: errNo = %d (continuing with export..)\n", WSAGetLastError());
+            //return -1;  //we wont abort due to this failure
         }
-        return retVal;
 #else
         int flags = fcntl(pHl7Exp->client_socket, F_GETFL, 0);
-        if (flags == -1) return -1;
+        if (flags == -1) { return -1; }
         retVal = fcntl(pHl7Exp->client_socket, F_SETFL, flags | O_NONBLOCK);
         int option = 1;
         if (setsockopt(pHl7Exp->client_socket, SOL_SOCKET, SO_REUSEADDR, &option, sizeof(option)) < 0) {    
-            BTLHL7EXP_ERR("BTLHL7EXP ERROR: setsockopt SO_REUSEADDR failed : %d\n", errno);         
+            BTLHL7EXP_ERR("BTLHL7EXP WARNING: setsockopt SO_REUSEADDR failed : errNo = %d (continuing with export..)\n", errno);         
+        }
+#endif
+        if (retVal < 0) {
+            pHl7Exp->exportStatus = BTLHL7EXP_STATUS_ERR_SOCKET_NONBLOCK;
         }
         return retVal;
-#endif
 
     } //_btlHl7ExpSetSocketOptions()
 
 
     //#######################################################################
 
+void btlHl7ExpEnableSsl(BtlHl7Export_t* pHl7Exp, int enable) {
+#ifdef BTLHL7EXP_SSL_EN
+
+    if (!pHl7Exp) {
+        return;
+    }
+    pHl7Exp->sslEnable = enable ? 1 : 0;
+#else
+    pHl7Exp->sslEnable = 0;
+#endif
+}
+
  static int _btlHl7SendDataToSrv(BtlHl7Export_t* pHl7Exp) {
      // Send input
      
-     int nBytesTx;
+     int nBytesTx = 0;
      if (pHl7Exp->outputHl7Len <= 0) {
          return 0; //nothing to do
      }
+
+#ifdef BTLHL7EXP_SSL_EN
+     int sslWriteRet;
+     if (pHl7Exp->sslEnable != 0) {
+         // ----- Secure mode: send over SSL -----
+        sslWriteRet = btlHl7ExpSslSendOrRetry(pHl7Exp);
+#ifdef BTLHL7EXP_DBUG_HL7_MSG_PRT_EN
+        btlHl7ExpMsgDump(pHl7Exp->outputHl7Buf, pHl7Exp->outputHl7Len);
+#endif
+        if (sslWriteRet < 0) {
+            pHl7Exp->exportStatus = BTLHL7EXP_STATUS_ERR_SSL_SEND;
+            return -1; // indicate error
+        }
+        if (sslWriteRet == 0) {
             //add this chunk size to total message size and transmit the chunk
-     pHl7Exp->hl7MsgSize += pHl7Exp->outputHl7Len;
+            pHl7Exp->hl7MsgSize += pHl7Exp->outputHl7Len;
+            //reset (clear) HL7 transmit buffer for next chunk
+            _btlHl7ExpUpdateBufCtl(pHl7Exp, sizeof(pHl7Exp->outputHl7Buf)/*outBufRemaining*/);
+        }
+        return sslWriteRet;  //ssl write did not succeed, must retry later
+     }
+     else {
+     	nBytesTx = send(pHl7Exp->client_socket, pHl7Exp->outputHl7Buf, pHl7Exp->outputHl7Len, 0);
+     }
+#else
+
      nBytesTx = send(pHl7Exp->client_socket, pHl7Exp->outputHl7Buf, pHl7Exp->outputHl7Len, 0);
+
+#endif
      BTLHL7EXP_DBUG1("BTLHL7EXP: INFO: Transmitting chunk of %d bytes (total till now=%d)\n", pHl7Exp->outputHl7Len, pHl7Exp->hl7MsgSize);
 #ifdef BTLHL7EXP_DBUG_HL7_MSG_PRT_EN
      btlHl7ExpMsgDump(pHl7Exp->outputHl7Buf, pHl7Exp->outputHl7Len);
 #endif
-
+     //################################################################################################################################################################
      if (nBytesTx == SOCKET_ERROR) {
          printf("BTLHL7EXP: ERROR: Socket send failed! Aborting export!\n");
          pHl7Exp->exportStatus = BTLHL7EXP_STATUS_ERR_SOCKET_SEND;
          return -1;
      }
+     //add this chunk size to total message size and transmit the chunk
+     pHl7Exp->hl7MsgSize += pHl7Exp->outputHl7Len;
         //reset (clear) HL7 transmit buffer for next chunk
      _btlHl7ExpUpdateBufCtl(pHl7Exp, sizeof(pHl7Exp->outputHl7Buf)/*outBufRemaining*/);
      return 0;// data sent successfully
@@ -212,6 +269,15 @@ int btlHl7ExportInit(BtlHl7Export_t* pHl7Exp, char* ipAddrStr, uint16_t port) {
         return -1;
     }
     memset(pHl7Exp, 0, sizeof(BtlHl7Export_t));  // Clear struct
+//############################################################################################################################
+
+    pHl7Exp->state = BTL_HL7_STATE_IDLE;
+    pHl7Exp->nextState = BTL_HL7_STATE_IDLE;
+
+#ifdef BTLHL7EXP_SSL_EN
+    pHl7Exp->sslEnable = 0; // default disabled
+#endif
+
 
     strncpy_s(pHl7Exp->processingId, sizeof(pHl7Exp->processingId), "P", _TRUNCATE); // default P = Production, MSH.11
     strncpy_s(pHl7Exp->obxResultStatusStr, sizeof(pHl7Exp->obxResultStatusStr), "P", _TRUNCATE); // OBX.11
@@ -253,9 +319,15 @@ int btlHl7ExportPdfReport(BtlHl7Export_t* pHl7Exp,
      char* protocolExtraData,
     int protocolExtraDataLen) {
   // if (!pHl7Exp || !pdfPath || !diagnosticsXmlPath || !protocolExtraData || (protocolExtraDataLen <= 0)) {
-    if (!pHl7Exp || !pdfPath || !diagnosticsXmlPath || protocolExtraDataLen >= sizeof(pHl7Exp->protocolExtraData)) {
+    if (!pHl7Exp || !pdfPath || protocolExtraDataLen >= sizeof(pHl7Exp->protocolExtraData)) {
         return BTLHL7EXP_STATUS_INPUT_ERR;
     }
+    // if both PED and btlXmlNg are not avaliable , we cannot proceed with export
+    if (!diagnosticsXmlPath && !protocolExtraData) {
+        return BTLHL7EXP_STATUS_INPUT_ERR;
+    }
+
+
     if (pHl7Exp->exportStatus > BTLHL7EXP_STATUS_NO_ERROR) {
         return BTLHL7EXP_STATUS_BUSY;
     }
@@ -273,9 +345,17 @@ int btlHl7ExportPdfReport(BtlHl7Export_t* pHl7Exp,
     strncpy_s(pHl7Exp->_orderControl, sizeof(pHl7Exp->_orderControl), pHl7Exp->orderControl, _TRUNCATE);
 
     //TBDNOW check if pdf file exists and is readable (read the first 16 bytes to check)
-            
+      if (pdfPath) {      
     strncpy_s(pHl7Exp->pdfFilePath, sizeof(pHl7Exp->pdfFilePath), pdfPath, _TRUNCATE);
+    } else {
+    pHl7Exp->pdfFilePath[0] = '\0';
+    }
+            
+    if (diagnosticsXmlPath) {
     strncpy_s(pHl7Exp->diagnosticsFilePath, sizeof(pHl7Exp->diagnosticsFilePath), diagnosticsXmlPath, _TRUNCATE);
+    } else {
+        pHl7Exp->diagnosticsFilePath[0] = '\0';  // mark as missing
+    }
     btlHl7PerformExport(pHl7Exp);  //export will be taken up in the seperate export processing thread
     return 0;
 }//btlHl7ExportPdfReport()
@@ -357,9 +437,9 @@ int btlHl7ExpConnectSrvPoll(BtlHl7Export_t* pHl7Exp) {
 
 }  //btlHl7ExpConnectSrvPoll()
 //######################################################################
-static void changeStateToAckWait(BtlHl7Export_t* pHl7Exp, BtlHl7ExportState_t* state) {
+static void changeStateToAckWait(BtlHl7Export_t* pHl7Exp) {
                 //File export comleted successfully
-                *state = BTL_HL7_STATE_SRV_ACK_WAIT;
+                pHl7Exp->state = BTL_HL7_STATE_SRV_ACK_WAIT;
                 BTLHL7EXP_DBUG0("BTLHL7EXP: INFO: Waiting for server ack!\n");
                 pHl7Exp->threadSleepTimeMs = 200;
                 pHl7Exp->ackWaitTimeOutCounter =
@@ -368,7 +448,57 @@ static void changeStateToAckWait(BtlHl7Export_t* pHl7Exp, BtlHl7ExportState_t* s
                 BTLHL7EXP_DBUG1("BTLHL7EXP: Export completed. HL7 Msg Total Length = %d bytes, waiting for srv ack..\n", pHl7Exp->hl7MsgSize);
 }//changeStateToAckWait()
 
+static void checkSendStatChangeState(BtlHl7Export_t* pHl7Exp, int sendStat, BtlHl7ExportState_t nextState) {
 
+    if (sendStat < 0) {
+        //error occured during sending data on socket
+          //abort export
+       // BTLHL7EXP_ERR("BTLHL7EXP: ERR: checkSendStatChangeState() : sendStat<0\n");
+
+        pHl7Exp->state = BTL_HL7_STATE_CLEANUP;
+        gDebugMarker1 = 1;
+        return;
+    }
+    if (sendStat == 0) {
+        pHl7Exp->state = nextState;
+            //handle BTL_HL7_STATE_SRV_ACK_WAIT 
+        if (nextState == BTL_HL7_STATE_SRV_ACK_WAIT) {
+            changeStateToAckWait(pHl7Exp);
+          //  BTLHL7EXP_DBUG0("BTLHL7EXP: Send success! Changing state to %d (ACK WAIT).\n", nextState);
+        }
+        else {
+           // BTLHL7EXP_DBUG0("BTLHL7EXP: Send success! Changing state to %d.\n", nextState);
+
+        }
+        return;
+    }
+        //for non-ssl, control is not expected to reach here
+#ifdef BTLHL7EXP_SSL_EN
+    if (pHl7Exp->sslEnable) {
+        if (sendStat) {  //this check is redeundant, sendStat will be > 0 if we reach here
+            //we need to retry the ssl transmit in next loop iter
+            pHl7Exp->state = BTL_HL7_STATE_SSL_RESEND;
+            pHl7Exp->nextState = nextState;
+           // BTLHL7EXP_DBUG0("BTLHL7EXP: Entering BTL_HL7_STATE_SSL_RESEND with next state = %d (ACK WAIT = %d).\n", nextState, BTL_HL7_STATE_SRV_ACK_WAIT);
+
+        }
+    }
+#endif
+    return;
+}
+
+static void addHl7MsgEndMarker(BtlHl7Export_t* pHl7Exp) {
+    char* outBuf = pHl7Exp->pHl7BufNext;
+    int outBufRemaining = pHl7Exp->outputHl7SizeLeft;
+
+    *outBuf++ = BTLHL7EXP_MLLP_MSG_END_CHAR;
+    *outBuf++ = 0x0D;
+    outBufRemaining = outBufRemaining - 2;
+    *outBuf = 0;  //null terminate, just in case
+    _btlHl7ExpUpdateBufCtl(pHl7Exp, outBufRemaining);
+
+    return;
+}  //addHl7MsgEndMarker()
 //#######################################################################
 
 // State machine thread 
@@ -384,7 +514,7 @@ void* btlHl7ExportThreadFunc(void* arg)
     //int outBufRemaining;
 
     BtlHl7Export_t* pHl7Exp = (BtlHl7Export_t*)arg;
-    BtlHl7ExportState_t state = BTL_HL7_STATE_IDLE;
+    pHl7Exp->state = BTL_HL7_STATE_IDLE;
     pHl7Exp->threadRunning = 2;
 
     while (1) {
@@ -393,8 +523,11 @@ void* btlHl7ExportThreadFunc(void* arg)
                 pHl7Exp->doShutdown = 0;
                 pHl7Exp->startPdfExportFlag = 0;
                 BTLHL7EXP_DBUG1("BTLHL7EXP: Thread shutdown command received; Exiting thread!\n");
+#ifdef BTLHL7EXP_SSL_EN
+                btlHl7ExpClientShutdownTcpAndSsl(pHl7Exp);
+#else
                 _btlHl7ExpCloseClientSocket(pHl7Exp);
-
+#endif
                 if (pHl7Exp->exportStatus > 0) {
                     pHl7Exp->exportStatus = BTLHL7EXP_STATUS_ERR_USER_ABORT;
                 }
@@ -415,7 +548,7 @@ void* btlHl7ExportThreadFunc(void* arg)
 
         Sleep(pHl7Exp->threadSleepTimeMs);  // milliseconds
 
-        switch (state) {
+        switch (pHl7Exp->state) {
         case BTL_HL7_STATE_IDLE:
             pHl7Exp->threadSleepTimeMs = BTLHL7EXP_THREAD_SLEEP_IDLE_MS;
             if (pHl7Exp->startPdfExportFlag) {
@@ -424,18 +557,21 @@ void* btlHl7ExportThreadFunc(void* arg)
                 pHl7Exp->startPdfExportFlag = 0;
                 //run more often to quckly complete the file export
                 pHl7Exp->threadSleepTimeMs = BTLHL7EXP_THREAD_SLEEP_ACTIVE_MS;
-                state = BTL_HL7_STATE_INITIATE_SRV_CONNECTION;// BTL_HL7_STATE_PROCESS_EXPORT;
 
+                pHl7Exp->state = BTL_HL7_STATE_INITIATE_SRV_CONNECTION;// BTL_HL7_STATE_PROCESS_EXPORT;
+                BTLHL7EXP_DBUG1("BTLHL7EXP: Starting TCP connection.\n");
+                gDebugMarker1 = 0;
             }
             break;
         case BTL_HL7_STATE_INITIATE_SRV_CONNECTION:
             BTLHL7EXP_DBUG1("BTLHL7EXP: Initiating connection, IP=%s, Port=%d\n", pHl7Exp->srvIpAddrStr, pHl7Exp->srvPort);
             if (btlHl7ExpConnectToSrv(pHl7Exp) != 0) {
                 //error occured during connect, abort the export
-                state = BTL_HL7_STATE_IDLE;
+                //cleanup, error status setting already done in btlHl7ExpConnectToSrv
+                pHl7Exp->state = BTL_HL7_STATE_IDLE;
                 break;
             }
-            state = BTL_HL7_STATE_SRV_CONNECTION_WAIT;
+            pHl7Exp->state = BTL_HL7_STATE_SRV_CONNECTION_WAIT;
             BTLHL7EXP_DBUG1("BTLHL7EXP: Connecting - waiting for server response\n");
             pHl7Exp->connectTimeoutCounter =
                 (pHl7Exp->connectTimeoutConfigSeconds * 1000) / pHl7Exp->threadSleepTimeMs;
@@ -448,14 +584,14 @@ void* btlHl7ExportThreadFunc(void* arg)
                 pHl7Exp->exportStatus = BTLHL7EXP_STATUS_ERR_CONNECT;
 
                 _btlHl7ExpCloseClientSocket(pHl7Exp);
-                state = BTL_HL7_STATE_IDLE;
+                pHl7Exp->state = BTL_HL7_STATE_IDLE;
                 break;
             }
             retVal = btlHl7ExpConnectSrvPoll(pHl7Exp);
             if (retVal < 0) {
                 //error occured during connect wait, abort the export
                 _btlHl7ExpCloseClientSocket(pHl7Exp);
-                state = BTL_HL7_STATE_IDLE;
+                pHl7Exp->state = BTL_HL7_STATE_IDLE;
                 break;
             }
             if (retVal == 0) {
@@ -466,23 +602,96 @@ void* btlHl7ExportThreadFunc(void* arg)
             //TBDNOW remove below after test
             //BTLHL7EXP_DBUG0("\n####################### WARNING: Socket closed - test mode! ##########\n\n");
             //_btlHl7ExpCloseClientSocket(pHl7Exp);
-            state = BTL_HL7_STATE_PROCESS_EXPORT;
-            pHl7Exp->exportStatus = BTLHL7EXP_STATUS_INPROGRESS;
-            break;
-        case BTL_HL7_STATE_PROCESS_EXPORT:
-            BTLHL7EXP_DBUG1("BTLHL7EXP: Processing export...\n");
-            int xmlNgStat = -1;
 
             if (pHl7Exp->userCmd == BTLHL7_EXP_USER_CMD_SRV_STATUS) {
-                    //User request is for checking if server is alive, so stopping here 
+                //User request is for checking if server is alive, so stopping here 
                 _btlHl7ExpCloseClientSocket(pHl7Exp);
                 BTLHL7EXP_DBUG1("BTLHL7EXP: Server status check succeeded!\n");
                 pHl7Exp->exportStatus = BTLHL7EXP_STATUS_NO_ERROR;
-                state = BTL_HL7_STATE_IDLE;
+                pHl7Exp->state = BTL_HL7_STATE_CLEANUP;
+                gDebugMarker1 = 2;
+
                 break;
             }
+#ifdef BTLHL7EXP_SSL_EN
+            if (pHl7Exp->sslEnable == 0) 
+#endif           
+            {
+                pHl7Exp->state = BTL_HL7_STATE_PROCESS_EXPORT;
+                pHl7Exp->exportStatus = BTLHL7EXP_STATUS_INPROGRESS;
+                break;
+            }
+#ifdef BTLHL7EXP_SSL_EN
+            else {
+                pHl7Exp->state = BTL_HL7_STATE_INITIATE_SSL_CONNECTION;
+                break;
+            }
+#endif  //BTLHL7EXP_SSL_EN
+//#############################################################################################################################################
+#ifdef BTLHL7EXP_SSL_EN
+        case BTL_HL7_STATE_INITIATE_SSL_CONNECTION:
+            BTLHL7EXP_DBUG1("BTLHL7EXP: Initiating SSL connection..\n");
+  
+            retVal = btlHl7ExpCreateClientCtx(pHl7Exp);
+            if (!retVal) {
+                pHl7Exp->state = BTL_HL7_STATE_CLEANUP;
+                gDebugMarker1 = 3;
+
+                break;
+            }
+
+                //SSL objects created and initialised successfully
+                //now assoiciate the TCP connection (socket) with SSL
+
+             retVal = SSL_set_fd(pHl7Exp->ssl, (int)(pHl7Exp->client_socket));
+             if (retVal != 1) {
+                 BTLHL7EXP_ERR("BTLHL7EXP ERR: SSL SSL_set_fd() failed!\n");
+                 pHl7Exp->state = BTL_HL7_STATE_CLEANUP;
+                 gDebugMarker1 = 4;
+
+                 break;
+             }
+                pHl7Exp->state = BTL_HL7_STATE_SSL_HANDSHAKE_WAIT;
+                BTLHL7EXP_DBUG1("BTLHL7EXP: SSL context created, starting handshake\n");
+                break;
+
+        case BTL_HL7_STATE_SSL_HANDSHAKE_WAIT:
+            retVal = SSL_connect(pHl7Exp->ssl);
+            if (retVal <= 0) {
+                int err = SSL_get_error(pHl7Exp->ssl, retVal);
+                if (err == SSL_ERROR_WANT_READ || err == SSL_ERROR_WANT_WRITE) {
+                    break; // retry next cycle
+                } else {
+                    BTLHL7EXP_ERR("BTLHL7EXP ERR: SSL handshake failed(1)!\n");
+                    pHl7Exp->state = BTL_HL7_STATE_CLEANUP;
+                    gDebugMarker1 = 5;
+                    break;
+                }
+            }
+
+            if (SSL_get_verify_result(pHl7Exp->ssl) != X509_V_OK) {
+                // fail, log, abort
+                BTLHL7EXP_ERR("BTLHL7EXP ERR: SSL handshake failed(2)!\n");
+                pHl7Exp->state = BTL_HL7_STATE_CLEANUP;
+                gDebugMarker1 = 11;
+                break;
+            }
+
+            BTLHL7EXP_DBUG1("BTLHL7EXP: SSL handshake completed\n");
+            pHl7Exp->state = BTL_HL7_STATE_PROCESS_EXPORT;
+            pHl7Exp->exportStatus = BTLHL7EXP_STATUS_INPROGRESS;
+            break;
+#endif
+
+//############################################################################################################################
+        case BTL_HL7_STATE_PROCESS_EXPORT:
+            BTLHL7EXP_DBUG1("BTLHL7EXP: Processing export...\n");
+            int xmlNgStat = -1;
+            int sendStat = 0;
             // parse btlxmlng if avaliable 
             memset(g_BtlHl7ExpXmlNgAttributesParsed, 0, sizeof(g_BtlHl7ExpXmlNgAttributesParsed));
+            btlHl7InitXmlNgParser(pHl7Exp);
+
            if (pHl7Exp->diagnosticsFilePath[0]!= 0) {
                xmlNgStat =  btlHl7ParseXmlNg(pHl7Exp);
             }
@@ -506,27 +715,34 @@ void* btlHl7ExportThreadFunc(void* arg)
                 BTLHL7EXP_DBUG1("BTLHL7EXP: Generating msg meta data from ExtraData XML.\n");
                 retVal = btlHl7ParseProtocolExtraData(pHl7Exp); // Full MSH, PID, ORC, OBR
             }
-            else {
+            else if (xmlNgStat == 0){               
                 
                 BTLHL7EXP_DBUG1("BTLHL7EXP: Auto generating msg meta data since no ExtraData XML available!\n");
                 retVal = btlHl7BuildMinimalFromXmlNg(pHl7Exp);  // Minimal fallback: MSH + PID
-
+            }
+            else {
+                retVal = -1;               
             }
             // Adding initial part (MSH,PID,ORC..etc ) over, now add OBX segments
-           
+            if (retVal < 0) {
+                //fatal error - abort exporting, error status id 
+                // already set by processing function
+                _btlHl7ExpCloseClientSocket(pHl7Exp);
+                if (pHl7Exp->exportStatus > 0) {
+                    pHl7Exp->exportStatus = BTLHL7EXP_STATUS_PROCESSING_ERR;
+                }
+                pHl7Exp->state = BTL_HL7_STATE_CLEANUP;
+                gDebugMarker1 = 12;
+                break;
+            }
             //if we are doing cancellation of order , nothing more to be done ; send the message generated above
             if (pHl7Exp->userCmd == BTLHL7_EXP_USER_CMD_SEND_CANCEL) {
-
-
-                if (_btlHl7SendDataToSrv(pHl7Exp)) {
-                    //error occured during sending data on socket
-                      //abort export
-                    _btlHl7ExpCloseClientSocket(pHl7Exp);
-                    state = BTL_HL7_STATE_IDLE;
-                    break;
-            }
-                //cancel message sent , now change state to WAIT FOR ACK
-                changeStateToAckWait(pHl7Exp, &state);
+                addHl7MsgEndMarker(pHl7Exp); 
+                sendStat = _btlHl7SendDataToSrv(pHl7Exp);
+                    //if cancel message sent successfully on ssl or tcp, change state to BTL_HL7_STATE_SRV_ACK_WAIT
+                    //if fail to send msg, abort (change state to BTL_HL7_STATE_CLEANUP)
+                    //if ssl enabled and send needs retry, change state to BTL_HL7_STATE_SSL_RESEND
+                checkSendStatChangeState(pHl7Exp, sendStat, BTL_HL7_STATE_SRV_ACK_WAIT);
                 break;
             }// if (pHl7Exp->userCmd == BTLHL7_EXP_USER_CMD_SRV_STATUS)
             
@@ -556,22 +772,22 @@ void* btlHl7ExportThreadFunc(void* arg)
             //error occuring in above function is not fatal. We can still attempt to send the pdf
 #ifdef UNDEF
             if (btlHl7ParseDiagnosticsXml(pHl7Exp, pHl7Exp->outputHl7Buf, sizeof(pHl7Exp->outputHl7Buf)) != 0) {
-                state = BTL_HL7_STATE_ERROR;
+                pHl7Exp->state = BTL_HL7_STATE_ERROR;
                 break;
             }
 #endif
+                //Initial MSH, ORC, OBR and OBX segments for ECG measurements are ready in the trasmit buffer
+                //So send it out on the network
+            sendStat = _btlHl7SendDataToSrv(pHl7Exp);
+                //if message sent successfully on ssl or tcp, change pHl7Exp->state to BTL_HL7_STATE_SRV_ACK_WAIT
+                //if fail to send msg, abort (change state to BTL_HL7_STATE_CLEANUP)
+                //if ssl enabled and send needs retry, change state to BTL_HL7_STATE_SSL_RESEND
+            checkSendStatChangeState(pHl7Exp, sendStat, BTL_HL7_STATE_SEND_PDF_SEGS);
 
-            if (_btlHl7SendDataToSrv(pHl7Exp)) {
-                //error occured during sending data on socket
-                  //abort export
-                _btlHl7ExpCloseClientSocket(pHl7Exp);
-                state = BTL_HL7_STATE_IDLE;
-                break;
-            }
             //Now start the PDF segment and change state to send the PDF segment by segment
+            //may transit through BTL_HL7_STATE_SSL_RESEND for ssl
 
             pHl7Exp->pdfState = BTLHL7EXP_PDF_NOT_INIT;
-            state = BTL_HL7_STATE_SEND_PDF_SEGS; // BTL_HL7_STATE_SEND_RESULT;
             break;
 
         case BTL_HL7_STATE_SEND_PDF_SEGS:
@@ -579,14 +795,11 @@ void* btlHl7ExportThreadFunc(void* arg)
             if (retVal < 0) {
                 //fatal error - abort exporting, error status id 
                 // already set by processing function
-                state = BTL_HL7_STATE_IDLE;
+                pHl7Exp->state = BTL_HL7_STATE_CLEANUP;
+                gDebugMarker1 = 6;
                 break;
             }
-            if (pHl7Exp->expFileSizeLeft <= 0) {
-                //File export comleted successfully
-                changeStateToAckWait(pHl7Exp, &state);
-            }
-
+                //other state changes are handled within _btlHl7SendOnePdfChunk()
             break;
 
         case BTL_HL7_STATE_SRV_ACK_WAIT:
@@ -594,18 +807,54 @@ void* btlHl7ExportThreadFunc(void* arg)
             if (ackStatus >= 0) {
                 //ack from server received or abort (fail), error code if any woud be set in exportStatus
                 BTLHL7EXP_DBUG1("BTLHL7EXP: INFO: Ack received from server!\n");
-                state = BTL_HL7_STATE_IDLE;
+                pHl7Exp->state = BTL_HL7_STATE_CLEANUP;
+                gDebugMarker1 = 7;
             }
             pHl7Exp->ackWaitTimeOutCounter--;
-            if (pHl7Exp->ackWaitTimeOutCounter <= 0 && state != BTL_HL7_STATE_IDLE) {
+            if (pHl7Exp->ackWaitTimeOutCounter <= 0 && pHl7Exp->state != BTL_HL7_STATE_IDLE) {
                 printf("BTLHL7EXP: ERROR: Timeout waiting for server ACK!\n");
-                state = BTL_HL7_STATE_IDLE;
+                pHl7Exp->state = BTL_HL7_STATE_CLEANUP;
+                gDebugMarker1 = 8;
                 pHl7Exp->exportStatus = BTLHL7EXP_STATUS_ERR_ACK_TIMEOUT;
             }
             break;
 
+        case BTL_HL7_STATE_CLEANUP:
+#ifdef BTLHL7EXP_SSL_EN
+            btlHl7ExpClientShutdownTcpAndSsl(pHl7Exp);
+#else
+            _btlHl7ExpCloseClientSocket(pHl7Exp);
+#endif
+            pHl7Exp->state = BTL_HL7_STATE_IDLE;
+            break;  //case BTL_HL7_STATE_CLEANUP
+
+#ifdef BTLHL7EXP_SSL_EN
+        case BTL_HL7_STATE_SSL_RESEND:
+            sendStat = _btlHl7SendDataToSrv(pHl7Exp);
+            if (sendStat < 0) {
+                //error occured during sending data on ssl
+                  //abort export, error status set by earlier processing functions
+                pHl7Exp->state = BTL_HL7_STATE_CLEANUP;
+                gDebugMarker1 = 9;
+                break;
+            }
+            if (sendStat > 0) {
+                //we need to retry the ssl transmit in next loop iter
+                break;
+            }
+                //sendStat = 0, so send completed, move to the next state
+                //BTL_HL7_STATE_SRV_ACK_WAIT needs special handling
+            if (pHl7Exp->nextState == BTL_HL7_STATE_SRV_ACK_WAIT) {
+                changeStateToAckWait(pHl7Exp);
+                break;
+            }
+            pHl7Exp->state = pHl7Exp->nextState;
+            break;
+#endif
         default:
-            state = BTL_HL7_STATE_IDLE;
+            BTLHL7EXP_ERR("BTLHL7EXP ERROR: Reached default in switch statement\n");
+            pHl7Exp->state = BTL_HL7_STATE_CLEANUP;
+            gDebugMarker1 = 10;
             break;
         }
 
@@ -754,6 +1003,7 @@ int _btlHl7SendOnePdfChunk(BtlHl7Export_t* pHl7Exp) {
         }
         pHl7Exp->expFileSizeLeft = 0;
         fclose(pHl7Exp->expFilePtr);
+        changeStateToAckWait(pHl7Exp);
         return 0; 
     }
     
@@ -784,9 +1034,22 @@ int _btlHl7SendOnePdfChunk(BtlHl7Export_t* pHl7Exp) {
 
     BTLHL7EXP_DBUG0("BTLHL7EXP INFO: pdf OBX segment (pdf file left=%d bytes):\n",  (int)pHl7Exp->expFileSizeLeft);
 
-    if (_btlHl7SendDataToSrv(pHl7Exp)) {
-          //error during socket send, status set in _btlHl7SendDataToSrv()
-        return -1;
+    //pdf data chunk is ready in the trasmit buffer
+    //So send it out on the network
+    int sendStat = _btlHl7SendDataToSrv(pHl7Exp);
+    //if message sent successfully on ssl or tcp, change pHl7Exp->state to BTL_HL7_STATE_SRV_ACK_WAIT
+    //if fail to send msg, abort (change state to BTL_HL7_STATE_CLEANUP)
+    //if ssl enabled and send needs retry, change state to BTL_HL7_STATE_SSL_RESEND
+    checkSendStatChangeState(pHl7Exp, sendStat, BTL_HL7_STATE_SEND_PDF_SEGS);
+        //correct the nextState and/or state if file transfer is completed
+    if (pHl7Exp->expFileSizeLeft <= 0) {
+        //File export comleted successfully
+        pHl7Exp->nextState = BTL_HL7_STATE_SRV_ACK_WAIT;
+        if (pHl7Exp->state == BTL_HL7_STATE_SEND_PDF_SEGS) {
+                //ssl send wait not required - all chunks transmitted successfully
+                //so change state to BTL_HL7_STATE_SRV_ACK_WAIT
+            changeStateToAckWait(pHl7Exp);
+        }
     }
 
     return 0;
@@ -829,22 +1092,22 @@ int btlHl7ExpBase64Encode(char* base64Buf, unsigned char* buffer, int len) {
 
 int btlHl7ExpConnectToSrv(BtlHl7Export_t* pHl7Exp)
 {
-    if (btlHl7CheckIpAndPort(pHl7Exp)){
-        return -1;
-    }
-
-    if (pHl7Exp->tcpState == BTLHL7EXP_TCP_NOT_INIT) {
+     if (pHl7Exp->tcpState == BTLHL7EXP_TCP_NOT_INIT) {
 #ifdef BTL_HL7_FOR_WINDOWS
         // Initialize Winsock
         if (WSAStartup(MAKEWORD(2, 2), &(pHl7Exp->wsa)) != 0) {
             BTLHL7EXP_ERR("Winsock  initialization failed: %d\n", WSAGetLastError());
             pHl7Exp->exportStatus = BTLHL7EXP_STATUS_ERR_WSA_INIT;
             return -1;
-    }
+     }
 #else
         //nothing to be done for linux
 #endif
         pHl7Exp->tcpState = BTLHL7EXP_INIT_DONE;
+    }
+
+    if (btlHl7CheckIpAndPort(pHl7Exp)){
+        return -1;
     }
 
         //now try connectiing to server
@@ -864,29 +1127,41 @@ int btlHl7ExpConnectToSrv(BtlHl7Export_t* pHl7Exp)
     BTLHL7EXP_DBUG1("BTLHL7EXP INFO: Socket creation successful!\n");
 
     // Set socket to non-blocking mode
-    _btlHl7ExpSetSocketOptions(pHl7Exp);
+    if (_btlHl7ExpSetSocketOptions(pHl7Exp) < 0) {
+        BTLHL7EXP_ERR("BTLHL7EXP ERROR: Setting Non-Blocking mode on socket failed! Aborting!\n");
+        _btlHl7ExpCloseClientSocket(pHl7Exp);
+        return -1;
+    }
 
     if (_btlHl7ExpConnectSrv(pHl7Exp)) {
         return -1; //failed to connect, check error status
     }
-
 
     return 0;
 }  //btlHl7ExpConnectToSrv()
 
 //#######################################################################
 
-
 static int _btlHl7ExpAckRx(BtlHl7Export_t* pHl7Exp)
 {
     //returns -1 if ack rx failed (socket error/ disconnect)
     //returns 0 on succesful ack Rx
     //returns 1 if receive should be tried later (ack not received yet)
-
-    pHl7Exp->ackCurRxSize = recv(pHl7Exp->client_socket, 
-        &(pHl7Exp->ackMsgRxBuf[pHl7Exp->ackMsgSize]), 
-        BTL_HL7_MAX_HL7_ACK_MSG_LEN-pHl7Exp->ackMsgSize - 1, 0);
-
+    int availBufSize = BTL_HL7_MAX_HL7_ACK_MSG_LEN - pHl7Exp->ackMsgSize - 1;
+    if (pHl7Exp->sslEnable) {
+#ifdef BTLHL7EXP_SSL_EN
+        pHl7Exp->ackCurRxSize = btlHl7ExpRxSslData(pHl7Exp, &(pHl7Exp->ackMsgRxBuf[pHl7Exp->ackMsgSize]), availBufSize);
+        if (pHl7Exp->ackCurRxSize < 0) {
+            return 1;  //try rx after some time
+        }
+#endif
+    }
+    else
+    {
+        pHl7Exp->ackCurRxSize = recv(pHl7Exp->client_socket,
+            &(pHl7Exp->ackMsgRxBuf[pHl7Exp->ackMsgSize]),
+            availBufSize, 0);
+    }
     if (pHl7Exp->ackCurRxSize == 0)
     {
         //socket disconnected
@@ -896,8 +1171,8 @@ static int _btlHl7ExpAckRx(BtlHl7Export_t* pHl7Exp)
     }  //if (ackCurRxSize == 0)
             //########################################################################
       //No disconnection yet if we reach here
-    if (pHl7Exp->ackCurRxSize < 0)
-    {		//No bytes received - check for error
+    if (pHl7Exp->sslEnable==0 && pHl7Exp->ackCurRxSize < 0)
+    {		//No bytes received - check for error (Non-ssl mode only)
 
 #ifdef BTL_HL7_FOR_WINDOWS
         if (WSAGetLastError() == WSAEWOULDBLOCK) {
@@ -1617,3 +1892,129 @@ int btlHl7ExpConvertIsoToHl7Ts(char *iso_timestamp, char *hl7_timestamp_out, siz
     return 0; // Success
 }
 
+unsigned long long btlhl7ExpGetTickMs(void) {
+
+#ifdef BTL_HL7_FOR_WINDOWS
+    return (unsigned long long)GetTickCount64();
+#else  //of ifdef BTL_HL7_FOR_WINDOWS (for linux below)
+    struct timespec ts;
+#if defined(CLOCK_MONOTONIC)
+    clock_gettime(CLOCK_MONOTONIC, &ts);
+#else
+    clock_gettime(CLOCK_REALTIME, &ts);
+#endif
+    return (unsigned long long)ts.tv_sec * 1000ULL + (unsigned long long)(ts.tv_nsec / 1000000ULL);
+#endif  //else of ifdef BTL_HL7_FOR_WINDOWS
+
+
+}  //btlhl7ExpGetTickMs()
+
+//##############################################################################################
+
+int btlHl7ExpSslSetOwnCertFile(BtlHl7Export_t* pHl7Exp, char* pStr) {
+#ifdef BTLHL7EXP_SSL_EN
+    if (!pHl7Exp || !pStr) {
+        return -1;
+    }
+    char* pDest = pHl7Exp->own_cert_file;
+    strncpy(pDest, pStr, BTLHL7_MAX_PATH_LEN - 1);
+    pDest[BTLHL7_MAX_PATH_LEN - 1] = 0;
+    BTLHL7EXP_DBUG1("BTLHL7EXP: SSL: Own Certificate file set to %s.\n", pHl7Exp->own_cert_file);
+    return 0;
+#else
+    return -1;  //not valid in non-ssl compile
+#endif
+} //btlHl7ExpSslSetOwnCertFile()
+
+//##############################################################################################
+
+int btlHl7ExpSslSetOwnKeyFile(BtlHl7Export_t* pHl7Exp, char* pStr) {
+#ifdef BTLHL7EXP_SSL_EN
+    if (!pHl7Exp || !pStr) {
+        return -1;
+    }
+    char* pDest = pHl7Exp->own_key_file;
+    strncpy(pDest, pStr, BTLHL7_MAX_PATH_LEN - 1);
+    pDest[BTLHL7_MAX_PATH_LEN - 1] = 0;
+    BTLHL7EXP_DBUG1("BTLHL7EXP: SSL: Own Key file set to %s.\n", pHl7Exp->own_key_file);
+    return 0;
+#else
+return -1;  //not valid in non-ssl compile
+#endif
+} //btlHl7ExpSslSetOwnKeyFile()
+
+//##############################################################################################
+
+int btlHl7ExpSslSetPeerCaFile(BtlHl7Export_t* pHl7Exp, char* pStr) {
+#ifdef BTLHL7EXP_SSL_EN
+    if (!pHl7Exp || !pStr) {
+        return -1;
+    }
+    char* pDest = pHl7Exp->peer_ca_file;
+    strncpy(pDest, pStr, BTLHL7_MAX_PATH_LEN - 1);
+    pDest[BTLHL7_MAX_PATH_LEN - 1] = 0;
+    BTLHL7EXP_DBUG1("BTLHL7EXP: SSL: Peer CA file set to %s.\n", pHl7Exp->peer_ca_file);
+    return 0;
+#else
+return -1;  //not valid in non-ssl compile
+#endif
+} //btlHl7ExpSslSetPeerCaFile()
+
+//##############################################################################################
+
+int btlHl7ExpSslUseOwnCertificate(BtlHl7Export_t* pHl7Exp, int enable_disableB) {
+#ifdef BTLHL7EXP_SSL_EN
+    if (!pHl7Exp) {
+        return -1;
+    }
+    pHl7Exp->sslUseOwnCertificate = 0;
+    if (enable_disableB) {
+        pHl7Exp->sslUseOwnCertificate = 1;
+        BTLHL7EXP_DBUG1("BTLHL7EXP: SSL: sslUseOwnCertificate set to true.\n");
+    }
+    else
+    {
+        BTLHL7EXP_DBUG1("BTLHL7EXP: SSL: sslUseOwnCertificate set to false.\n");
+    }
+    return 0;
+#else
+    return -1;  //not valid in non-ssl compile
+#endif
+} //btlHl7ExpSslUseOwnCertificate()
+
+//##############################################################################################
+
+int btlHl7ExpSslSetPeerVerifyMode(BtlHl7Export_t* pHl7Exp, int mode) {
+#ifdef BTLHL7EXP_SSL_EN
+    if (!pHl7Exp) {
+        return -1;
+    }
+    if (mode<0 || mode>BTLHL7EXP_SSL_VERIFY_HOST)
+    {
+        BTLHL7EXP_ERR("BTLHL7EXP: ERROR: SSL: btlHl7ExpSslSetPeerVerifyMode() Invalid mode : %d\n", mode);
+        return -2;
+    }
+    pHl7Exp->sslPeerVerifyMode = mode;
+    BTLHL7EXP_DBUG1("BTLHL7EXP : SSL: btlHl7ExpSslSetPeerVerifyMode(): mode set to %d.\n", pHl7Exp->sslPeerVerifyMode);
+    return 0;
+#else
+    return -1;  //not valid in non-ssl compile
+#endif
+} //btlHl7ExpSslSetPeerVerifyMode()
+
+//##############################################################################################
+
+int btlHl7ExpSslSetPeerHostMatchStr(BtlHl7Export_t* pHl7Exp, char* pStr) {
+#ifdef BTLHL7EXP_SSL_EN
+    if (!pHl7Exp || !pStr) {
+        return -1;
+    }
+    char* pDest = pHl7Exp->sslPeerHostNameMatchStr;
+    strncpy(pDest, pStr, sizeof(pHl7Exp->sslPeerHostNameMatchStr) - 1);
+    pDest[sizeof(pHl7Exp->sslPeerHostNameMatchStr) - 1] = 0;
+    BTLHL7EXP_DBUG1("BTLHL7EXP: SSL: Peer hostname verify match set to %s.\n", pHl7Exp->sslPeerHostNameMatchStr);
+    return 0;
+#else
+    return -1;  //not valid in non-ssl compile
+#endif
+} //btlHl7ExpSslSetPeerCaFile()

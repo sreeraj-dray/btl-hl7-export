@@ -472,6 +472,12 @@ int btlhl7ExpParseXmlNgAverageBeat(xmlNode* pDiagnosticStepNode)
 
 //#################################################################################################
 
+void btlHl7InitXmlNgParser(BtlHl7Export_t* pHl7Exp) 
+{
+    pHl7Exp->examPerformedTimeStr[0] = 0;
+    pHl7Exp->fillerOrderNumber[0] = 0;
+}
+
 int btlHl7ParseXmlNg(BtlHl7Export_t* pHl7Exp) {
     int retVal;
 

@@ -9,8 +9,23 @@
 #include "btlHl7EcgExport.h"
 #include "btlHl7ExpDebug.h" 
 #include "btlHl7Config.h"
-//TEST configuration - define only one below
+#include "btlHl7ExpSslCommon.h"
 
+#define BTLHL7EXP_TEST_LOAD_CFG_FROM_XML 1
+#ifdef BTLHL7EXP_SSL_EN  //from library.h file or compiler command line
+    #define BTLHL7EXP_TEST_SSL_EN 1  //enable SSL for all tests (WARNING: cfg from XML will override if enabled above!)
+        #define BTLHL7EXP_TEST_SSL_USE_OWN_CERT_EN 1    //enables the use of a client certificate and key, both must be set by user
+        #define  BTLHL7EXP_TEST_SET_PEER_VERIFY_MODE_EN 1       //enables verification of remote server certificate, certificate+IPaddress or certificate+hostname 
+                //BTLHL7EXP_SSL_VERIFY_NONE=disable verification of peer, BTLHL7EXP_SSL_VERIFY_CA= verify only certificate
+                // BTLHL7EXP_SSL_VERIFY_HOST=verify hostname, BTLHL7EXP_SSL_VERIFY_IP=verify IP address
+            #define BTLHL7EXP_SSL_TEST_PEER_VERIFY_MODE BTLHL7EXP_SSL_VERIFY_HOST   
+            #define BTLHL7EXP_SSL_TEST_PEER_VERIFY_HOST_NAME 1  //for this test suite to load the hostname to match for allowing connection
+                char gBtlHl7ExpTest_PeerVerifyHostNameMatchStr[] = "myserver.local"; // "myserver.local";
+#endif
+//=====================================================================================================
+//====================== TEST configuration - define only one below (enable SSL above) ================
+
+//#define BTLHL7EXP_TESTCASE_ADHOC 1 //DO NOT ENABLE unless checking new test modifications
 #define BTLHL7EXP_TESTCASE_USE_EXDATA 1
 //#define BTLHL7EXP_TESTCASE_USE_EXDATA_WITH_USER_RECV_APP 1
 //#define BTLHL7EXP_TESTCASE_NO_EXDATA_DEF_VER_2P2 1
@@ -18,7 +33,12 @@
   //#define BTLHL7EXP_TESTCASE_SERVER_STATUS_CHECK 1
 //#define BTLHL7EXP_TESTCASE_SEND_CANCEL 1
 
-#define BTLHL7EXP_TESTCASE_LOAD_CFG_FROM_XML 1
+#define BTLHL7EXP_TEST_SSL_CERT1 1
+    char ownCert1[] = "certs/client.crt";
+    char ownKey1[] = "certs/client.key";
+    char peerCaCert1[] = "certs/ca.pem";
+
+
 
 #ifdef BTL_HL7_FOR_WINDOWS
 #include <direct.h>  //for _getcwd()
@@ -45,8 +65,8 @@ char gXmlConfigFileName[256] = "..\\xmlConfig\\Btlhl7_config.xml";
 char gPdfFileName[256] = "..\\testInputFiles\\hl7Test_1.pdf";
 
         //BTL XML-NG file for getting meta data for the export (Uncomment one of the following)
-//char gBtlXmlNgFileName[256] = "..\\testInputFiles\\d60b513e-d780-4ba0-8e57-a66d2ff8d42b.EcgRest.diagnostics.xml"; //EcgRest
-char gBtlXmlNgFileName[256] = "..\\testInputFiles\\84ba0f4d-d75b-4eeb-9004-6a606e6dc563.EcgRhythm-WithResultsTag.diagnostics.xml"; //EcgRhythm with conclusion tag/ doctor's statement
+char gBtlXmlNgFileName[256] = "..\\testInputFiles\\d60b513e-d780-4ba0-8e57-a66d2ff8d42b.EcgRest.diagnostics.xml"; //EcgRest
+//char gBtlXmlNgFileName[256] = "..\\testInputFiles\\84ba0f4d-d75b-4eeb-9004-6a606e6dc563.EcgRhythm-WithResultsTag.diagnostics.xml"; //EcgRhythm with conclusion tag/ doctor's statement
 //char gBtlXmlNgFileName[256] = "..\\testInputFiles\\983ff92d-5f75-4530-bc8b-6d3641043d3b.EcgRhythm-NoConclusionTag.diagnostics.xml"; //EcgRhythm without conclusion tag/ doctor's statement
 //char gBtlXmlNgFileName[256] = "..\\testInputFiles\\44e5d2c6-521f-4773-8e94-212578975b51.saecg.diagnostics.xml"; //saecg
 
@@ -229,9 +249,44 @@ int main() {
     
     //optionally set the server timeout (how much time to wait for server responses)
     //Default is 30 seconds if not configured with below call
-#ifdef  BTLHL7EXP_TESTCASE_LOAD_CFG_FROM_XML 
+
+
+
+#ifdef BTLHL7EXP_TEST_SSL_EN
+    btlHl7ExpEnableSsl(pHl7Exp, BTLHL7EXP_SSL_ENABLE); 
+
+    #ifdef BTLHL7EXP_TEST_SSL_CERT1
+        btlHl7ExpSslSetOwnCertFile(pHl7Exp, ownCert1);      //required if server verifies client by its certificate
+        btlHl7ExpSslSetOwnKeyFile(pHl7Exp, ownKey1);        //required if server verifies client by its certificate
+        btlHl7ExpSslSetPeerCaFile(pHl7Exp, peerCaCert1);    //required if client needs to verify the server certificate, hostname, IPaddress etc
+        //btlHl7ExpSslSetPeerCaFile(pHl7Exp, ownCert1);    //Negative test - this will fail SSL handshake as we pass the client cert instead of peer CA
+
+    #endif
+    #ifdef BTLHL7EXP_TEST_SSL_USE_OWN_CERT_EN
+        btlHl7ExpSslUseOwnCertificate(pHl7Exp, BTLHL7EXP_SSL_ENABLE); ///enables the use of a client certificate and key, both must be set by user
+    #endif
+
+    #ifdef BTLHL7EXP_TEST_SET_PEER_VERIFY_MODE_EN
+            //enables/ disables verifcation of server (remote's) certificate and optionally ipAddress OR hostname (based on BTLHL7EXP_SSL_TEST_PEER_VERIFY_MODE)
+            // BTLHL7EXP_SSL_VERIFY_NONE=disable verification of peer certificate, ipaddress/hostname
+            // BTLHL7EXP_SSL_VERIFY_CA=verify peer certificate (skip ipaddress/hostname verification)
+            // BTLHL7EXP_SSL_VERIFY_IP=verify IP address (and verify peer certificate)
+            // BTLHL7EXP_SSL_VERIFY_HOST=verify hostname (and verify peer certificate)
+            //NOTE: SSL handshake/connection will fail if other than BTLHL7EXP_SSL_VERIFY_NONE is set and an appropriate peer CA file is not set
+                    //WARNING: if hostname to match is set to empty string (default), hostname match will be DISABLED inspite of BTLHL7EXP_SSL_VERIFY_HOST being set!
+        btlHl7ExpSslSetPeerVerifyMode(pHl7Exp, BTLHL7EXP_SSL_TEST_PEER_VERIFY_MODE);
+    #endif
+    #ifdef BTLHL7EXP_SSL_TEST_PEER_VERIFY_HOST_NAME
+        btlHl7ExpSslSetPeerHostMatchStr(pHl7Exp, gBtlHl7ExpTest_PeerVerifyHostNameMatchStr);
+    #endif
+
+    #ifdef BTLHL7EXP_TEST_LOAD_CFG_FROM_XML
+        btlHl7ExpLoadXmlConfig(pHl7Exp, gXmlConfigFileName);
+    #endif
+#endif
+#ifdef  BTLHL7EXP_TESTCASE_ADHOC 
     
-    btlHl7ExpLoadXmlConfig(pHl7Exp, gXmlConfigFileName);
+    //btlHl7ExpLoadXmlConfig(pHl7Exp, gXmlConfigFileName);
  //   runExportCase(pHl7Exp, gPdfFileName, gBtlXmlNgFileName, NULL, 0, "TESTCASE : Config from Xml ");
     extraDataSize = (int)strlen(gExtraData2);
     //runExportCase(pHl7Exp, gPdfFileName, gBtlXmlNgFileName, gExtraData2, extraDataSize, "TESTCASE : Config from Xml along with ExtraData");
@@ -315,7 +370,7 @@ int main() {
     //-------------
     waitForExportCompletion(pHl7Exp);
 
-    goto test_end;
+    //goto test_end;
 #endif
 
 
@@ -348,6 +403,7 @@ int main() {
 
     goto test_end;
 #endif
+
 
 
 #ifdef BTLHL7EXP_TESTCASE_USE_EXDATA_WITH_USER_RECV_APP

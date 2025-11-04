@@ -49,12 +49,24 @@
     <ConfigItem id="9" name="ReceivingApplication" NamespaceID="HIS_ExpRecvApp_Xml_1" UniversalID="HIS_ExpRecvApp_Xml_2"/>
     <ConfigItem id="10" name="ReceivingFacility" NamespaceID="ExpRecvFac_Xml_1" UniversalID="ExpRecvFac_Xml_2"/>
 	<!-- Other Hl7 Message generation controls -->
-	<ConfigItem id="11" name="UseSeperateObxEcgMeas">Yes</ConfigItem>  <!-- Yes or No, Yes will send each measurment in its own OBX segment -->
-	<ConfigItem id="12" name="ObxResultStatus">F</ConfigItem>  <!-- OBX.11: P = Preliminary, F = Final, C = Corrected -->
-	<ConfigItem id="13" name="OrderStatus">CM</ConfigItem> <!-- ORC.5: CM = Completed (default), F = Finished -->
-	<ConfigItem id="14" name="OrderType">ECG</ConfigItem> <!-- OBR.4: Default exam type used for matching and export -->
+	  <ConfigItem id="11" name="UseSeperateObxEcgMeas">Yes</ConfigItem>  <!-- Yes or No, Yes will send each measurment in its own OBX segment -->
+	  <ConfigItem id="12" name="ObxResultStatus">F</ConfigItem>  <!-- OBX.11: P = Preliminary, F = Final, C = Corrected -->
+	  <ConfigItem id="13" name="OrderStatus">CM</ConfigItem> <!-- ORC.5: CM = Completed (default), F = Finished -->
+	  <ConfigItem id="14" name="OrderType">ECG</ConfigItem> <!-- OBR.4: Default exam type used for matching and export -->
+    
+    <!-- SSL (Secure Server Layer) configuration -->
+        <!-- SslUseOwnCertificate: Yes or No, Yes will require a certificate+key pair file paths to be set by user -->
+    <ConfigItem id="1001" name="SslUseOwnCertificate">Yes</ConfigItem> 
+        <!-- SslVerifyPeerMode: Whether to verify server certificate: -->
+        <!-- 0: No verification, 1: Verify certificate (server CA file path must be set by user) -->
+        <!-- 1: Verify certificate (server CA file path must be set by user) -->
+        <!-- 2: Verify server certificate and IP address (server CA file path must be set by user) -->
+        <!-- 3: Verify server certificate and hostname (server CA file path and hostname must be set by user) -->  
+    <ConfigItem id="1002" name="SslVerifyPeerMode">0</ConfigItem>
+        <!-- SslPeerHostNameMatchStr: Exact server host name to verify, used only when SslVerifyPeerMode is 2 or 3 -->
+    <ConfigItem id="1003" name="SslPeerHostNameMatchStr">*.local</ConfigItem>
 
-	
+
 
   </btlHl7PdfExportConfig>
  <!-- Configuration for Hl7 Export END -->

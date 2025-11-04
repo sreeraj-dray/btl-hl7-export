@@ -110,13 +110,13 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>TEST_HL7;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)\iconv\include;$(SolutionDir)\libxml2\inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\inc_ext;$(SolutionDir)\iconv\include;$(SolutionDir)\libxml2\inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(SolutionDir)\ext_lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>$(CoreLibraryDependencies);%(AdditionalDependencies);libxml2.lib;iconv.lib</AdditionalDependencies>
+      <AdditionalDependencies>$(CoreLibraryDependencies);%(AdditionalDependencies);libxml2.lib;iconv.lib;ssleay32.lib; libeay32.lib; ws2_32.lib; crypt32.lib;</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -127,12 +127,15 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>$(SolutionDir)\inc_ext;$(SolutionDir)\iconv\include;$(SolutionDir)\libxml2\inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>$(SolutionDir)\ext_lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>$(CoreLibraryDependencies);%(AdditionalDependencies);libxml2.lib;iconv.lib;ssleay32.lib; libeay32.lib; ws2_32.lib; crypt32.lib;</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -140,6 +143,7 @@
     <ClCompile Include="btlHl7EcgExport.c" />
     <ClCompile Include="btlHl7EcgExportTestmain.c" />
     <ClCompile Include="btlHl7ExpParseHl7.c" />
+    <ClCompile Include="btlHl7ExpSslCommon.c" />
     <ClCompile Include="btlHl7XmlNg.c" />
     <ClCompile Include="btlHl7XmlExtraData.c" />
   </ItemGroup>
@@ -148,6 +152,7 @@
     <ClInclude Include="btlHl7EcgExport.h" />
     <ClInclude Include="btlHl7ExpDebug.h" />
     <ClInclude Include="btlHl7ExpParseHl7.h" />
+    <ClInclude Include="btlHl7ExpSslCommon.h" />
     <ClInclude Include="btlHl7XmlNg.h" />
     <ClInclude Include="btlHl7XmlExtraData.h" />
   </ItemGroup>

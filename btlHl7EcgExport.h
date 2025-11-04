@@ -1,6 +1,9 @@
 #ifndef BTL_HL7_ECG_EXPORT_H
 #define BTL_HL7_ECG_EXPORT_H 1
 
+//Feature enable macros
+#define  BTLHL7EXP_SSL_EN 1
+
 #if defined(_WIN32) || defined(__WIN32__) || defined(WIN32) || defined(_WIN64) || defined(__MINGW32__) || defined(__MINGW64__)
 //#if (_WIN32) || (_WIN64)
 #define BTL_HL7_FOR_WINDOWS 1
@@ -39,10 +42,12 @@ typedef int socklen_t;
 #include <netinet/in.h>
 #include <poll.h>
 #include <arpa/inet.h>
+#include <netdb.h>
 #include <sys/socket.h>
 #include <sys/types.h>
 //#include <sys/select.h>
 #include <pthread.h>
+#include <time.h>
 
 #define INVALID_SOCKET -1
 #define SOCKET_ERROR   -1
@@ -56,6 +61,12 @@ typedef int socklen_t;
 
 #endif
 
+#ifdef BTLHL7EXP_SSL_EN
+    #include <openssl/ssl.h>
+    #include <openssl/err.h>
+    #include <openssl/opensslv.h>
+    #include <openssl/x509_vfy.h>
+#endif
 #include "btlHl7ExpDebug.h"
 #include "btlHl7ExpParseHl7.h"
 
@@ -77,6 +88,8 @@ typedef int socklen_t;
 
 #define BTLHL7_SERVER_IP_MAX_LEN                (16)
 #define BTLHL7_EXPORT_SERVER_TIMEOUT_SEC        (3)
+#define BTLHL7_HOST_NAME_BUF_LEN                (128)
+
 
 #define BTL_HL7_NAME_BUF_SIZE           (128)  //Sending Application, Facility etc
 #define BTL_HL7EXP_VERSION_BUF_SIZE     (8)
@@ -112,7 +125,22 @@ typedef int socklen_t;
 #define BTLHL7EXP_STATUS_XMLNG_NO_PAT_INFO  (-22)
 #define BTLHL7EXP_STATUS_XMLNG_NO_PAT_INFO2 (-23)
 #define BTLHL7EXP_STATUS_ERR_CFG_XML_READ   (-24)
-#define BTLHL7EXP_STATUS_ERR_CFG_XML_ROOTNODE  (-25)
+#define BTLHL7EXP_STATUS_ERR_CFG_XML_ROOTNODE   (-25)
+#define BTLHL7EXP_STATUS_ERR_SOCKET_NONBLOCK    (-26)
+    //SSL errors
+#define BTLHL7EXP_STATUS_ERR_SSL_CTX_CR                 (-51)
+#define BTLHL7EXP_STATUS_ERR_SSL_VER_CFG                (-52)
+#define BTLHL7EXP_STATUS_ERR_SSL_HOST_MATCH_STR         (-53)
+#define BTLHL7EXP_STATUS_ERR_SSL_GET0_PARAM             (-54)
+#define BTLHL7EXP_STATUS_ERR_SSL_SET1_IP_ASC            (-55)
+#define BTLHL7EXP_STATUS_ERR_SSL_SET1_HOST              (-56)
+#define BTLHL7EXP_STATUS_ERR_INVALID_VERIFY_MODE        (-57)
+#define BTLHL7EXP_STATUS_ERR_SSL_NO_PEER_CA_FILE        (-58)
+#define BTLHL7EXP_STATUS_ERR_SSL_LD_VERIFY_LOCS         (-59)
+#define BTLHL7EXP_STATUS_ERR_SSL_OWN_CERT_KEY_FILE_S    (-60)
+#define BTLHL7EXP_STATUS_ERR_SSL_NEW_CREATE             (-61)
+#define BTLHL7EXP_STATUS_ERR_SSL_SEND                   (-62)
+
 #define BTLHL7EXP_STATUS_BUSY               (-100)
 
 #define BTLHL7EXP_TCP_NOT_INIT  (0)
@@ -122,7 +150,10 @@ typedef int socklen_t;
 #define BTLHL7_EXP_USER_CMD_EXPORT       (0)  // Normal PDF export
 #define BTLHL7_EXP_USER_CMD_SRV_STATUS   (1)  // Only check server connectivity
 #define BTLHL7_EXP_USER_CMD_SEND_CANCEL  (2)
-
+    
+//ssl enable API argument values
+#define BTLHL7EXP_SSL_DISABLE (0)
+#define BTLHL7EXP_SSL_ENABLE (1)
 
 // internal thread states
 typedef enum {
@@ -133,6 +164,13 @@ typedef enum {
     BTL_HL7_STATE_SEND_PDF_SEGS,
     BTL_HL7_STATE_SRV_ACK_WAIT,
     BTL_HL7_STATE_ERROR
+    ,BTL_HL7_STATE_CLEANUP
+ #ifdef BTLHL7EXP_SSL_EN
+    // Secure (TLS/SSL) states start here
+    ,BTL_HL7_STATE_INITIATE_SSL_CONNECTION
+    ,BTL_HL7_STATE_SSL_HANDSHAKE_WAIT
+    ,BTL_HL7_STATE_SSL_RESEND
+#endif
 } BtlHl7ExportState_t;
 
 #define BTLHL7EXP_PDF_NOT_INIT (0)
@@ -179,7 +217,9 @@ typedef struct HL7ExpAttributeParsed {
 
 
 typedef struct BtlHl7Export {
-   
+    BtlHl7ExportState_t state;
+    BtlHl7ExportState_t nextState;
+
     char diagnosticsFilePath[BTLHL7_MAX_PATH_LEN];   // Full path to .diagnostics.xml
     char pdfFilePath[BTLHL7_MAX_PATH_LEN];           //  PDF path
     char protocolExtraData[BTLHL7_MAX_EXTRA_DATA_LEN];     // XML string for MSH, PID, etc.
@@ -256,6 +296,21 @@ typedef struct BtlHl7Export {
     pthread_t exportThreadHandle;
     int client_socket;
 #endif
+    int sslEnable;   // 1 = enable SSL/TLS export, 0 = normal TCP
+#ifdef BTLHL7EXP_SSL_EN
+    int sslInitDone;
+    BtlHl7ExportState_t sslSendNextState;
+
+    char peer_ca_file[BTLHL7_MAX_PATH_LEN];
+    char own_cert_file[BTLHL7_MAX_PATH_LEN];
+    char own_key_file[BTLHL7_MAX_PATH_LEN];
+    SSL_CTX* sslCtx;    
+    SSL* ssl;
+    int sslUseOwnCertificate; //client must use certificate for authentication
+    int sslPeerVerifyMode;   //user config
+    char sslPeerHostNameMatchStr[BTLHL7_HOST_NAME_BUF_LEN];
+#endif
+
     long threadSleepTimeMs;
     int connectTimeoutCounter;
     int connectTimeoutConfigSeconds;
@@ -299,7 +354,7 @@ typedef struct BtlHl7ExpPidData {
 //externs
 
 extern int gBtlHl7ExpDebugLevel;
-
+extern int gDebugMarker1;
 //####################### Function Prototypes ###################
 
     //#################### User API functions ###################
@@ -366,6 +421,15 @@ void btlHl7ExportPrintf(int logLevel,  char* format, ...);
     int btlHl7ExpSetOrderControl(BtlHl7Export_t* pHl7Exp, char* orderControl);
     int btlHl7ExpSetOrderStatus(BtlHl7Export_t* pHl7Exp,  char* orderStatus);
     int btlHl7ExpSetOrderType(BtlHl7Export_t* pHl7Exp, char* examType);
+
+    //SSL support API (Available even if BTLHL7EXP_SSL_EN is disabled, but will return -1)
+    void btlHl7ExpEnableSsl(BtlHl7Export_t* pHl7Exp, int enable);
+    int btlHl7ExpSetOwnCertFile(BtlHl7Export_t* pHl7Exp, char* pStr);
+    int btlHl7ExpSetOwnKeyFile(BtlHl7Export_t* pHl7Exp, char* pStr);
+    int btlHl7ExpSetPeerCaFile(BtlHl7Export_t* pHl7Exp, char* pStr);
+    int btlHl7ExpSetPeerVerifyMode(BtlHl7Export_t* pHl7Exp, int mode);
+    int btlHl7ExpSslSetPeerHostMatchStr(BtlHl7Export_t* pHl7Exp, char* pStr);
+
     //#################### Internal functions  ##################
 
     void btlHl7PerformExport(BtlHl7Export_t* pHl7Exp);
@@ -388,5 +452,10 @@ void btlHl7ExportPrintf(int logLevel,  char* format, ...);
     char* btlHl7ExpGetMatchedString(char* inStr, char** matchStrings, int inStrLen);
     void _btlHl7SendCancel(BtlHl7Export_t* pHl7Exp);
     int btlHl7ExpConvertIsoToHl7Ts(char* iso_timestamp, char* hl7_timestamp_out, size_t buffer_size);
-    //END OF .h FILE
+    void _btlHl7ExpCloseClientSocket(BtlHl7Export_t* pHl7Exp);
+
+    unsigned long long btlhl7ExpGetTickMs(void);
+
 #endif // BTL_HL7_ECG_EXPORT_H 
+
+//END OF .h FILE

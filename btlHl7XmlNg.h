@@ -128,7 +128,7 @@ int btlHl7BuildMinimalFromXmlNg(BtlHl7Export_t* p);
 void btlHl7ExpAddEcgMeasToHl7_1(BtlHl7Export_t* pHl7Exp, int* pMeasAttrIds);
 void btlHl7ExpAddEcgMeasToHl7_0(BtlHl7Export_t* pHl7Exp, int* pMeasAttrIds);
 void btlHl7ExpAddDoctorStatement(BtlHl7Export_t* pHl7Exp);
-
+void btlHl7InitXmlNgParser(BtlHl7Export_t* pHl7Exp);
 
 
 #endif // BTL_XML_NG_ATTR_MAP_H
