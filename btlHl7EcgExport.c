@@ -1,4 +1,4 @@
-
+﻿
 
 #include "btlHl7EcgExport.h"
 #include "btlHl7XmlNg.h"
@@ -152,27 +152,45 @@ void btlHl7ExpEnableSsl(BtlHl7Export_t* pHl7Exp, int enable) {
 #endif
 }
 
- static int _btlHl7SendDataToSrv(BtlHl7Export_t* pHl7Exp) {
-     // Send input
+static void _updateHl7MsgDebugBuf(BtlHl7Export_t* pHl7Exp) {
+    if (!pHl7Exp->hl7MsgDebugBuf) {
+        return;
+    }
+
+    memcpy(&(pHl7Exp->hl7MsgDebugBuf[pHl7Exp->hl7MsgSize]), pHl7Exp->outputHl7Buf, pHl7Exp->outputHl7Len);
      
-     int nBytesTx = 0;
+    
+    return ;
+}
+
+ static int _btlHl7SendDataToSrv(BtlHl7Export_t* pHl7Exp) {
+     printf("UNIT TEST MODE = %d\n", pHl7Exp->unitTestMode);
+
+     // Send input  
+         int nBytesTx = 0;
      if (pHl7Exp->outputHl7Len <= 0) {
          return 0; //nothing to do
      }
+        
+
 
 #ifdef BTLHL7EXP_SSL_EN
      int sslWriteRet;
-     if (pHl7Exp->sslEnable != 0) {
+     if (pHl7Exp->sslEnable != 0 && pHl7Exp->unitTestMode == 0) {
          // ----- Secure mode: send over SSL -----
+       
         sslWriteRet = btlHl7ExpSslSendOrRetry(pHl7Exp);
 #ifdef BTLHL7EXP_DBUG_HL7_MSG_PRT_EN
         btlHl7ExpMsgDump(pHl7Exp->outputHl7Buf, pHl7Exp->outputHl7Len);
 #endif
+         
+
         if (sslWriteRet < 0) {
             pHl7Exp->exportStatus = BTLHL7EXP_STATUS_ERR_SSL_SEND;
             return -1; // indicate error
         }
         if (sslWriteRet == 0) {
+            _updateHl7MsgDebugBuf(pHl7Exp);
             //add this chunk size to total message size and transmit the chunk
             pHl7Exp->hl7MsgSize += pHl7Exp->outputHl7Len;
             //reset (clear) HL7 transmit buffer for next chunk
@@ -180,12 +198,31 @@ void btlHl7ExpEnableSsl(BtlHl7Export_t* pHl7Exp, int enable) {
         }
         return sslWriteRet;  //ssl write did not succeed, must retry later
      }
-     else {
-     	nBytesTx = send(pHl7Exp->client_socket, pHl7Exp->outputHl7Buf, pHl7Exp->outputHl7Len, 0);
+    else{
+        if (pHl7Exp->unitTestMode == 1) {
+             // We are in test mode – do NOT actually send data.
+             // Just emulate a successful send and capture data locally.
+             nBytesTx = pHl7Exp->outputHl7Len;
+             _updateHl7MsgDebugBuf(pHl7Exp);
+             printf("[UNIT TEST] Emulating send success (%d bytes)\n", nBytesTx);
+        }
+        else {
+
+             // btlHl7ExpStoreLastMessage(pHl7Exp->outputHl7Buf);
+             nBytesTx = send(pHl7Exp->client_socket, pHl7Exp->outputHl7Buf, pHl7Exp->outputHl7Len, 0);
+        }
      }
 #else
+        if (pHl7Exp->unitTestMode == 1) {
+             // Emulate success (skip actual send)
+            nBytesTx = pHl7Exp->outputHl7Len;
+            _updateHl7MsgDebugBuf(pHl7Exp);
+            printf("[UNIT TEST] Emulating send success (%d bytes)\n", nBytesTx);
+         }
+        else {
 
-     nBytesTx = send(pHl7Exp->client_socket, pHl7Exp->outputHl7Buf, pHl7Exp->outputHl7Len, 0);
+            nBytesTx = send(pHl7Exp->client_socket, pHl7Exp->outputHl7Buf, pHl7Exp->outputHl7Len, 0);
+        }
 
 #endif
      BTLHL7EXP_DBUG1("BTLHL7EXP: INFO: Transmitting chunk of %d bytes (total till now=%d)\n", pHl7Exp->outputHl7Len, pHl7Exp->hl7MsgSize);
@@ -198,8 +235,10 @@ void btlHl7ExpEnableSsl(BtlHl7Export_t* pHl7Exp, int enable) {
          pHl7Exp->exportStatus = BTLHL7EXP_STATUS_ERR_SOCKET_SEND;
          return -1;
      }
+         //_updateHl7MsgDebugBuf(pHl7Exp);
      //add this chunk size to total message size and transmit the chunk
      pHl7Exp->hl7MsgSize += pHl7Exp->outputHl7Len;
+  
         //reset (clear) HL7 transmit buffer for next chunk
      _btlHl7ExpUpdateBufCtl(pHl7Exp, sizeof(pHl7Exp->outputHl7Buf)/*outBufRemaining*/);
      return 0;// data sent successfully
@@ -356,6 +395,7 @@ int btlHl7ExportPdfReport(BtlHl7Export_t* pHl7Exp,
     } else {
         pHl7Exp->diagnosticsFilePath[0] = '\0';  // mark as missing
     }
+
     btlHl7PerformExport(pHl7Exp);  //export will be taken up in the seperate export processing thread
     return 0;
 }//btlHl7ExportPdfReport()
@@ -407,6 +447,10 @@ int btlHl7ExpConnectSrvPoll(BtlHl7Export_t* pHl7Exp) {
     pollFd.fd = pHl7Exp->client_socket;
     pollFd.events = POLLOUT;
 
+    if (pHl7Exp->unitTestMode) {
+        BTLHL7EXP_DBUG1("BTLHL7EXP:btlHl7ExpConnectSrvPoll():unitTestMode so returning successfull connection!\n");
+        return 1;
+    }
     retVal = btlHl7ExpPollFn(&pollFd, 1, 0); //no waiting/blocking
 
     if (retVal == 0) {
@@ -614,7 +658,7 @@ void* btlHl7ExportThreadFunc(void* arg)
                 break;
             }
 #ifdef BTLHL7EXP_SSL_EN
-            if (pHl7Exp->sslEnable == 0) 
+            if (pHl7Exp->sslEnable == 0 || pHl7Exp->unitTestMode) // in unitTestMode we would not exercise SSl 
 #endif           
             {
                 pHl7Exp->state = BTL_HL7_STATE_PROCESS_EXPORT;
@@ -1132,7 +1176,12 @@ int btlHl7ExpConnectToSrv(BtlHl7Export_t* pHl7Exp)
         _btlHl7ExpCloseClientSocket(pHl7Exp);
         return -1;
     }
-
+    
+    if (pHl7Exp->unitTestMode == 1) {
+        // we are in unitTest mode - so dont do actual connection to remote server, just return success
+         BTLHL7EXP_DBUG1("BTLHL7EXP INFO:btlHl7ExpConnectToSrv():unitTestMode so returning success!\n");
+        return 0;
+    }
     if (_btlHl7ExpConnectSrv(pHl7Exp)) {
         return -1; //failed to connect, check error status
     }
@@ -2018,3 +2067,45 @@ int btlHl7ExpSslSetPeerHostMatchStr(BtlHl7Export_t* pHl7Exp, char* pStr) {
     return -1;  //not valid in non-ssl compile
 #endif
 } //btlHl7ExpSslSetPeerCaFile()
+
+void btlHl7ExpSetUnitTestMode(BtlHl7Export_t* pHl7Exp, int enable)
+{
+    if (!pHl7Exp) {
+        return;
+    }
+    pHl7Exp->unitTestMode = enable;
+}
+
+void btlHl7ExpSetDebugBuffer(BtlHl7Export_t* pHl7Exp, char* buffer, int bufSize)
+{
+    if (!pHl7Exp) {
+        return;
+    }
+    pHl7Exp->hl7MsgDebugBuf = buffer;
+    pHl7Exp->hl7MsgSize = 0;
+    // Use the existing field outputHl7SizeLeft to represent total buffer size
+    pHl7Exp->outputHl7SizeLeft = bufSize;
+    if (buffer && bufSize > 0) {
+        pHl7Exp->hl7MsgDebugBuf[0] = '\0';
+    }
+}
+ char* btlHl7ExpGetLastMessage(BtlHl7Export_t* pHl7Exp)
+{
+     printf("[THREAD DEBUG] unitTestMode = %d\n", pHl7Exp->unitTestMode);
+
+     if (!pHl7Exp) {
+         return NULL;
+     }
+
+    // In Unit Test mode, return debug buffer instead of normal last message
+    if (pHl7Exp->unitTestMode && pHl7Exp->hl7MsgDebugBuf) {
+        pHl7Exp->hl7MsgDebugBuf[pHl7Exp->hl7MsgSize] = '\0'; // ensure null termination
+        return pHl7Exp->hl7MsgDebugBuf;
+    }
+
+    // Otherwise, return the current HL7 output buffer
+   pHl7Exp->outputHl7Buf[pHl7Exp->outputHl7Len] = '\0';
+    return pHl7Exp->outputHl7Buf;
+}
+
+

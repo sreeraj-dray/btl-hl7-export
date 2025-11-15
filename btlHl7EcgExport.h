@@ -219,6 +219,9 @@ typedef struct HL7ExpAttributeParsed {
 typedef struct BtlHl7Export {
     BtlHl7ExportState_t state;
     BtlHl7ExportState_t nextState;
+    int unitTestMode;//if = 1 connection to remote is disabled but messages are generated and written to hl7MsgDebugBuf
+    char* hl7MsgDebugBuf; // Hl7 messages will be returned to this buffer if not null
+    
 
     char diagnosticsFilePath[BTLHL7_MAX_PATH_LEN];   // Full path to .diagnostics.xml
     char pdfFilePath[BTLHL7_MAX_PATH_LEN];           //  PDF path
@@ -226,10 +229,10 @@ typedef struct BtlHl7Export {
     int protocolExtraDataLen;
 
     char outputHl7Buf[BTLHL7_MAX_HL7_DATA_LEN];          // Output HL7 message
-    int outputHl7Len;
+    int outputHl7Len; // the length of the current chunk being transmitted
     int outputHl7SizeLeft;
     char* pHl7BufNext;
-    int hl7MsgSize;   //total number of bytes in HL7 message
+    int hl7MsgSize;   //total number of bytes in HL7 message(sum of all chunks)
     //int isRestrictedExport;
     // Inside BtlHl7Export_t #####
     char srvIpAddrStr[BTLHL7_SERVER_IP_MAX_LEN];     // Holds server IP string
@@ -429,6 +432,11 @@ void btlHl7ExportPrintf(int logLevel,  char* format, ...);
     int btlHl7ExpSetPeerCaFile(BtlHl7Export_t* pHl7Exp, char* pStr);
     int btlHl7ExpSetPeerVerifyMode(BtlHl7Export_t* pHl7Exp, int mode);
     int btlHl7ExpSslSetPeerHostMatchStr(BtlHl7Export_t* pHl7Exp, char* pStr);
+       // Enables or disables unit test mode (1 = enable)
+    void btlHl7ExpSetUnitTestMode(BtlHl7Export_t* pHl7Exp, int enable);
+    void btlHl7ExpSetDebugBuffer(BtlHl7Export_t* pHl7Exp, char* buffer, int bufferSize);
+    char* btlHl7ExpGetLastMessage(BtlHl7Export_t* pHl7Exp);
+
 
     //#################### Internal functions  ##################
 
@@ -455,6 +463,7 @@ void btlHl7ExportPrintf(int logLevel,  char* format, ...);
     void _btlHl7ExpCloseClientSocket(BtlHl7Export_t* pHl7Exp);
 
     unsigned long long btlhl7ExpGetTickMs(void);
+
 
 #endif // BTL_HL7_ECG_EXPORT_H 
 

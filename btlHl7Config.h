@@ -31,11 +31,23 @@ typedef enum {
     EXP_CFG_ORDER_STATUS = 13,
     EXP_CFG_ORDER_TYPE = 14, 
 
+    EXP_CFG_SSL_ENABLE = 1000,
+    EXP_CFG_SSL_USE_OWN_CERT = 1001,
+    EXP_CFG_SSL_VERIFY_PEER_MODE = 1002,
+    EXP_CFG_SSL_PEER_HOST_MATCH_STR = 1003,
+    EXP_CFG_SSL_LAST = 1010,
+
     EXP_CFG_LAST_ID
 } Hl7PdfExportConfigId_t;
 
 
 // Function declaration
 int btlHl7ExpLoadXmlConfig(BtlHl7Export_t* pHl7Exp, char* xmlFilePath);
+void btlHl7ExpEnableSsl(BtlHl7Export_t* pHl7Exp, int enable);
+int  btlHl7ExpSslUseOwnCertificate(BtlHl7Export_t* pHl7Exp, int useOwn);
+int  btlHl7ExpSslSetPeerVerifyMode(BtlHl7Export_t* pHl7Exp, int mode);
+int  btlHl7ExpSslSetPeerHostMatchStr(BtlHl7Export_t* pHl7Exp, char* pStr);
+
+
 
 #endif // BTL_HL7_CONFIG_H

@@ -1,0 +1,806 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BtlXmlNg version="1.0.3">
+  <header>
+    <hardware category="ecg" model="BTL 8 Elite" serialNumber="dinesh-0782-"/>
+    <software name="ECG2" version="1.dinesh-2023-12-05T21:12:22+05:30"/>
+    <createdDatetime>2023-12-06T14:54:12</createdDatetime>
+  </header>
+  <users>
+    <user guid="{b5ca9896-6023-4673-98b0-694058722222}" type="unknown">
+      <firstName/>
+      <surname>admin</surname>
+    </user>
+  </users>
+  <patients>
+    <patient guid="{4d29e7da-03a9-4a05-a3bb-a27959c22222}" type="regular" demo="true">
+		<firstName>fn-2</firstName>
+      <surname>Rhythm</surname>
+      <titleBefore/>
+      <externalId origin="HIS"/>
+      <classification>European</classification>
+    </patient>
+  </patients>
+  <examinations>
+    <examination guid="{b70645ef-dba4-4caa-8848-3c95c7672222}" patientGuid="{4d29e7da-03a9-4a05-a3bb-a27959c22222}" type="EcgRhythm" demo="true">
+      <patientSnapshot>
+        <classification>European</classification>
+      </patientSnapshot>
+      <acquisition>
+        <sourceDevice model="BTL 8 Elite" revision="Desktop-100" swVersion="1.dinesh-2023-12-05T" serialNumber="dinesh-0782-">
+          <ecgDevice>
+            <profile>ACable_12leads</profile>
+          </ecgDevice>
+        </sourceDevice>
+        <rawData guid="{e08d7970-128c-4401-93bd-533cf830481b}">
+          <container format="Bebi" fileName="48c25b81-10e1-4738-90b4-c67ea1c4ab19.raw.bebi"/>
+        </rawData>
+        <acquisitor userGuid="{b5ca9896-6023-4673-98b0-694058729f5d}"/>
+      </acquisition>
+      <analysis rawDataGuid="{e08d7970-128c-4401-93bd-533cf830481b}">
+        <analysers>
+          <analyser module="EcgDiag" version="7.0.5.200"/>
+        </analysers>
+        <properties>
+          <property name="stripRange">
+            <start>5000</start>
+            <length>60000</length>
+          </property>
+          <property name="viewChannels">
+            <channel name="II"/>
+            <channel name="V5"/>
+          </property>
+          <property name="signalSpeed">10.00</property>
+          <property name="signalSensitivity">10.00</property>
+          <property name="halfSensitivity">false</property>
+        </properties>
+        <diagnosticStep name="filteredSignal">
+          <processedData>
+            <container format="Bebi" fileName="5f09ed8c-5fab-4ae0-9eb3-98203b29743f.filtered.bebi"/>
+          </processedData>
+          <eventTable type="Beat">
+            <event position="415">
+              <classification code="eventUnknown"/>
+              <measurements>
+                <measurement code="T_TimeOff_05ms">32768</measurement>
+                <measurement code="BSA_Group_Idx">0</measurement>
+                <measurement code="QRS_TimeOn_05ms">32768</measurement>
+                <measurement code="QRS_TimeOff_05ms">32768</measurement>
+                <measurement code="RR_Distance_05ms">1952</measurement>
+              </measurements>
+            </event>
+            <event position="906">
+              <classification code="eventUnknown"/>
+              <measurements>
+                <measurement code="T_TimeOff_05ms">32768</measurement>
+                <measurement code="BSA_Group_Idx">0</measurement>
+                <measurement code="QRS_TimeOn_05ms">32768</measurement>
+                <measurement code="QRS_TimeOff_05ms">32768</measurement>
+                <measurement code="RR_Distance_05ms">1964</measurement>
+              </measurements>
+            </event>
+            <event position="1397">
+              <classification code="eventUnknown"/>
+              <measurements>
+                <measurement code="T_TimeOff_05ms">32768</measurement>
+                <measurement code="BSA_Group_Idx">0</measurement>
+                <measurement code="QRS_TimeOn_05ms">32768</measurement>
+                <measurement code="QRS_TimeOff_05ms">32768</measurement>
+                <measurement code="RR_Distance_05ms">1964</measurement>
+              </measurements>
+            </event>
+            <event position="1888">
+              <classification code="eventUnknown"/>
+              <measurements>
+                <measurement code="T_TimeOff_05ms">32768</measurement>
+                <measurement code="BSA_Group_Idx">0</measurement>
+                <measurement code="QRS_TimeOn_05ms">32768</measurement>
+                <measurement code="QRS_TimeOff_05ms">32768</measurement>
+                <measurement code="RR_Distance_05ms">1964</measurement>
+              </measurements>
+            </event>
+            <event position="2378">
+              <classification code="eventUnknown"/>
+              <measurements>
+                <measurement code="T_TimeOff_05ms">32768</measurement>
+                <measurement code="BSA_Group_Idx">0</measurement>
+                <measurement code="QRS_TimeOn_05ms">32768</measurement>
+                <measurement code="QRS_TimeOff_05ms">32768</measurement>
+                <measurement code="RR_Distance_05ms">1960</measurement>
+              </measurements>
+            </event>
+            <event position="2869">
+              <classification code="eventUnknown"/>
+              <measurements>
+                <measurement code="T_TimeOff_05ms">32768</measurement>
+                <measurement code="BSA_Group_Idx">0</measurement>
+                <measurement code="QRS_TimeOn_05ms">32768</measurement>
+                <measurement code="QRS_TimeOff_05ms">32768</measurement>
+                <measurement code="RR_Distance_05ms">1964</measurement>
+              </measurements>
+            </event>
+            <event position="3131">
+              <classification code="eventUnknown"/>
+              <measurements>
+                <measurement code="T_TimeOff_05ms">32768</measurement>
+                <measurement code="BSA_Group_Idx">0</measurement>
+                <measurement code="QRS_TimeOn_05ms">32768</measurement>
+                <measurement code="QRS_TimeOff_05ms">32768</measurement>
+                <measurement code="RR_Distance_05ms">1048</measurement>
+              </measurements>
+            </event>
+            <event position="3500">
+              <classification code="eventUnknown"/>
+              <measurements>
+                <measurement code="T_TimeOff_05ms">32768</measurement>
+                <measurement code="BSA_Group_Idx">0</measurement>
+                <measurement code="QRS_TimeOn_05ms">32768</measurement>
+                <measurement code="QRS_TimeOff_05ms">32768</measurement>
+                <measurement code="RR_Distance_05ms">1476</measurement>
+              </measurements>
+            </event>
+            <event position="3990">
+              <classification code="eventUnknown"/>
+              <measurements>
+                <measurement code="T_TimeOff_05ms">32768</measurement>
+                <measurement code="BSA_Group_Idx">0</measurement>
+                <measurement code="QRS_TimeOn_05ms">32768</measurement>
+                <measurement code="QRS_TimeOff_05ms">32768</measurement>
+                <measurement code="RR_Distance_05ms">1960</measurement>
+              </measurements>
+            </event>
+            <event position="4482">
+              <classification code="eventUnknown"/>
+              <measurements>
+                <measurement code="T_TimeOff_05ms">32768</measurement>
+                <measurement code="BSA_Group_Idx">0</measurement>
+                <measurement code="QRS_TimeOn_05ms">32768</measurement>
+                <measurement code="QRS_TimeOff_05ms">32768</measurement>
+                <measurement code="RR_Distance_05ms">1968</measurement>
+              </measurements>
+            </event>
+            <event position="4972">
+              <classification code="eventUnknown"/>
+              <measurements>
+                <measurement code="T_TimeOff_05ms">32768</measurement>
+                <measurement code="BSA_Group_Idx">0</measurement>
+                <measurement code="QRS_TimeOn_05ms">32768</measurement>
+                <measurement code="QRS_TimeOff_05ms">32768</measurement>
+                <measurement code="RR_Distance_05ms">1960</measurement>
+              </measurements>
+            </event>
+            <event position="5462">
+              <classification code="eventUnknown"/>
+              <measurements>
+                <measurement code="T_TimeOff_05ms">32768</measurement>
+                <measurement code="BSA_Group_Idx">0</measurement>
+                <measurement code="QRS_TimeOn_05ms">32768</measurement>
+                <measurement code="QRS_TimeOff_05ms">32768</measurement>
+                <measurement code="RR_Distance_05ms">1960</measurement>
+              </measurements>
+            </event>
+            <event position="5954">
+              <classification code="eventUnknown"/>
+              <measurements>
+                <measurement code="T_TimeOff_05ms">32768</measurement>
+                <measurement code="BSA_Group_Idx">0</measurement>
+                <measurement code="QRS_TimeOn_05ms">32768</measurement>
+                <measurement code="QRS_TimeOff_05ms">32768</measurement>
+                <measurement code="RR_Distance_05ms">1968</measurement>
+              </measurements>
+            </event>
+            <event position="6445">
+              <classification code="eventUnknown"/>
+              <measurements>
+                <measurement code="T_TimeOff_05ms">32768</measurement>
+                <measurement code="BSA_Group_Idx">0</measurement>
+                <measurement code="QRS_TimeOn_05ms">32768</measurement>
+                <measurement code="QRS_TimeOff_05ms">32768</measurement>
+                <measurement code="RR_Distance_05ms">1964</measurement>
+              </measurements>
+            </event>
+            <event position="6934">
+              <classification code="eventUnknown"/>
+              <measurements>
+                <measurement code="T_TimeOff_05ms">32768</measurement>
+                <measurement code="BSA_Group_Idx">0</measurement>
+                <measurement code="QRS_TimeOn_05ms">32768</measurement>
+                <measurement code="QRS_TimeOff_05ms">32768</measurement>
+                <measurement code="RR_Distance_05ms">1956</measurement>
+              </measurements>
+            </event>
+            <event position="7425">
+              <classification code="eventUnknown"/>
+              <measurements>
+                <measurement code="T_TimeOff_05ms">32768</measurement>
+                <measurement code="BSA_Group_Idx">0</measurement>
+                <measurement code="QRS_TimeOn_05ms">32768</measurement>
+                <measurement code="QRS_TimeOff_05ms">32768</measurement>
+                <measurement code="RR_Distance_05ms">1964</measurement>
+              </measurements>
+            </event>
+            <event position="7915">
+              <classification code="eventUnknown"/>
+              <measurements>
+                <measurement code="T_TimeOff_05ms">32768</measurement>
+                <measurement code="BSA_Group_Idx">0</measurement>
+                <measurement code="QRS_TimeOn_05ms">32768</measurement>
+                <measurement code="QRS_TimeOff_05ms">32768</measurement>
+                <measurement code="RR_Distance_05ms">1960</measurement>
+              </measurements>
+            </event>
+            <event position="8406">
+              <classification code="eventUnknown"/>
+              <measurements>
+                <measurement code="T_TimeOff_05ms">32768</measurement>
+                <measurement code="BSA_Group_Idx">0</measurement>
+                <measurement code="QRS_TimeOn_05ms">32768</measurement>
+                <measurement code="QRS_TimeOff_05ms">32768</measurement>
+                <measurement code="RR_Distance_05ms">1964</measurement>
+              </measurements>
+            </event>
+            <event position="8898">
+              <classification code="eventUnknown"/>
+              <measurements>
+                <measurement code="T_TimeOff_05ms">32768</measurement>
+                <measurement code="BSA_Group_Idx">0</measurement>
+                <measurement code="QRS_TimeOn_05ms">32768</measurement>
+                <measurement code="QRS_TimeOff_05ms">32768</measurement>
+                <measurement code="RR_Distance_05ms">1968</measurement>
+              </measurements>
+            </event>
+            <event position="9387">
+              <classification code="eventUnknown"/>
+              <measurements>
+                <measurement code="T_TimeOff_05ms">32768</measurement>
+                <measurement code="BSA_Group_Idx">0</measurement>
+                <measurement code="QRS_TimeOn_05ms">32768</measurement>
+                <measurement code="QRS_TimeOff_05ms">32768</measurement>
+                <measurement code="RR_Distance_05ms">1956</measurement>
+              </measurements>
+            </event>
+            <event position="9878">
+              <classification code="eventUnknown"/>
+              <measurements>
+                <measurement code="T_TimeOff_05ms">32768</measurement>
+                <measurement code="BSA_Group_Idx">0</measurement>
+                <measurement code="QRS_TimeOn_05ms">32768</measurement>
+                <measurement code="QRS_TimeOff_05ms">32768</measurement>
+                <measurement code="RR_Distance_05ms">1964</measurement>
+              </measurements>
+            </event>
+            <event position="10368">
+              <classification code="eventUnknown"/>
+              <measurements>
+                <measurement code="T_TimeOff_05ms">32768</measurement>
+                <measurement code="BSA_Group_Idx">0</measurement>
+                <measurement code="QRS_TimeOn_05ms">32768</measurement>
+                <measurement code="QRS_TimeOff_05ms">32768</measurement>
+                <measurement code="RR_Distance_05ms">1960</measurement>
+              </measurements>
+            </event>
+            <event position="10631">
+              <classification code="eventUnknown"/>
+              <measurements>
+                <measurement code="T_TimeOff_05ms">32768</measurement>
+                <measurement code="BSA_Group_Idx">0</measurement>
+                <measurement code="QRS_TimeOn_05ms">32768</measurement>
+                <measurement code="QRS_TimeOff_05ms">32768</measurement>
+                <measurement code="RR_Distance_05ms">1052</measurement>
+              </measurements>
+            </event>
+            <event position="11000">
+              <classification code="eventUnknown"/>
+              <measurements>
+                <measurement code="T_TimeOff_05ms">32768</measurement>
+                <measurement code="BSA_Group_Idx">0</measurement>
+                <measurement code="QRS_TimeOn_05ms">32768</measurement>
+                <measurement code="QRS_TimeOff_05ms">32768</measurement>
+                <measurement code="RR_Distance_05ms">1476</measurement>
+              </measurements>
+            </event>
+            <event position="11490">
+              <classification code="eventUnknown"/>
+              <measurements>
+                <measurement code="T_TimeOff_05ms">32768</measurement>
+                <measurement code="BSA_Group_Idx">0</measurement>
+                <measurement code="QRS_TimeOn_05ms">32768</measurement>
+                <measurement code="QRS_TimeOff_05ms">32768</measurement>
+                <measurement code="RR_Distance_05ms">1960</measurement>
+              </measurements>
+            </event>
+            <event position="11982">
+              <classification code="eventUnknown"/>
+              <measurements>
+                <measurement code="T_TimeOff_05ms">32768</measurement>
+                <measurement code="BSA_Group_Idx">0</measurement>
+                <measurement code="QRS_TimeOn_05ms">32768</measurement>
+                <measurement code="QRS_TimeOff_05ms">32768</measurement>
+                <measurement code="RR_Distance_05ms">1968</measurement>
+              </measurements>
+            </event>
+            <event position="12472">
+              <classification code="eventUnknown"/>
+              <measurements>
+                <measurement code="T_TimeOff_05ms">32768</measurement>
+                <measurement code="BSA_Group_Idx">0</measurement>
+                <measurement code="QRS_TimeOn_05ms">32768</measurement>
+                <measurement code="QRS_TimeOff_05ms">32768</measurement>
+                <measurement code="RR_Distance_05ms">1960</measurement>
+              </measurements>
+            </event>
+            <event position="12963">
+              <classification code="eventUnknown"/>
+              <measurements>
+                <measurement code="T_TimeOff_05ms">32768</measurement>
+                <measurement code="BSA_Group_Idx">0</measurement>
+                <measurement code="QRS_TimeOn_05ms">32768</measurement>
+                <measurement code="QRS_TimeOff_05ms">32768</measurement>
+                <measurement code="RR_Distance_05ms">1964</measurement>
+              </measurements>
+            </event>
+            <event position="13454">
+              <classification code="eventUnknown"/>
+              <measurements>
+                <measurement code="T_TimeOff_05ms">32768</measurement>
+                <measurement code="BSA_Group_Idx">0</measurement>
+                <measurement code="QRS_TimeOn_05ms">32768</measurement>
+                <measurement code="QRS_TimeOff_05ms">32768</measurement>
+                <measurement code="RR_Distance_05ms">1964</measurement>
+              </measurements>
+            </event>
+            <event position="13944">
+              <classification code="eventUnknown"/>
+              <measurements>
+                <measurement code="T_TimeOff_05ms">32768</measurement>
+                <measurement code="BSA_Group_Idx">0</measurement>
+                <measurement code="QRS_TimeOn_05ms">32768</measurement>
+                <measurement code="QRS_TimeOff_05ms">32768</measurement>
+                <measurement code="RR_Distance_05ms">1960</measurement>
+              </measurements>
+            </event>
+            <event position="14434">
+              <classification code="eventUnknown"/>
+              <measurements>
+                <measurement code="T_TimeOff_05ms">32768</measurement>
+                <measurement code="BSA_Group_Idx">0</measurement>
+                <measurement code="QRS_TimeOn_05ms">32768</measurement>
+                <measurement code="QRS_TimeOff_05ms">32768</measurement>
+                <measurement code="RR_Distance_05ms">1960</measurement>
+              </measurements>
+            </event>
+            <event position="14925">
+              <classification code="eventUnknown"/>
+              <measurements>
+                <measurement code="T_TimeOff_05ms">32768</measurement>
+                <measurement code="BSA_Group_Idx">0</measurement>
+                <measurement code="QRS_TimeOn_05ms">32768</measurement>
+                <measurement code="QRS_TimeOff_05ms">32768</measurement>
+                <measurement code="RR_Distance_05ms">1964</measurement>
+              </measurements>
+            </event>
+            <event position="15415">
+              <classification code="eventUnknown"/>
+              <measurements>
+                <measurement code="T_TimeOff_05ms">32768</measurement>
+                <measurement code="BSA_Group_Idx">0</measurement>
+                <measurement code="QRS_TimeOn_05ms">32768</measurement>
+                <measurement code="QRS_TimeOff_05ms">32768</measurement>
+                <measurement code="RR_Distance_05ms">1960</measurement>
+              </measurements>
+            </event>
+            <event position="15906">
+              <classification code="eventUnknown"/>
+              <measurements>
+                <measurement code="T_TimeOff_05ms">32768</measurement>
+                <measurement code="BSA_Group_Idx">0</measurement>
+                <measurement code="QRS_TimeOn_05ms">32768</measurement>
+                <measurement code="QRS_TimeOff_05ms">32768</measurement>
+                <measurement code="RR_Distance_05ms">1964</measurement>
+              </measurements>
+            </event>
+            <event position="16397">
+              <classification code="eventUnknown"/>
+              <measurements>
+                <measurement code="T_TimeOff_05ms">32768</measurement>
+                <measurement code="BSA_Group_Idx">0</measurement>
+                <measurement code="QRS_TimeOn_05ms">32768</measurement>
+                <measurement code="QRS_TimeOff_05ms">32768</measurement>
+                <measurement code="RR_Distance_05ms">1964</measurement>
+              </measurements>
+            </event>
+            <event position="16887">
+              <classification code="eventUnknown"/>
+              <measurements>
+                <measurement code="T_TimeOff_05ms">32768</measurement>
+                <measurement code="BSA_Group_Idx">0</measurement>
+                <measurement code="QRS_TimeOn_05ms">32768</measurement>
+                <measurement code="QRS_TimeOff_05ms">32768</measurement>
+                <measurement code="RR_Distance_05ms">1960</measurement>
+              </measurements>
+            </event>
+            <event position="17378">
+              <classification code="eventUnknown"/>
+              <measurements>
+                <measurement code="T_TimeOff_05ms">32768</measurement>
+                <measurement code="BSA_Group_Idx">0</measurement>
+                <measurement code="QRS_TimeOn_05ms">32768</measurement>
+                <measurement code="QRS_TimeOff_05ms">32768</measurement>
+                <measurement code="RR_Distance_05ms">1964</measurement>
+              </measurements>
+            </event>
+            <event position="17870">
+              <classification code="eventUnknown"/>
+              <measurements>
+                <measurement code="T_TimeOff_05ms">32768</measurement>
+                <measurement code="BSA_Group_Idx">0</measurement>
+                <measurement code="QRS_TimeOn_05ms">32768</measurement>
+                <measurement code="QRS_TimeOff_05ms">32768</measurement>
+                <measurement code="RR_Distance_05ms">1968</measurement>
+              </measurements>
+            </event>
+            <event position="18131">
+              <classification code="eventUnknown"/>
+              <measurements>
+                <measurement code="T_TimeOff_05ms">32768</measurement>
+                <measurement code="BSA_Group_Idx">0</measurement>
+                <measurement code="QRS_TimeOn_05ms">32768</measurement>
+                <measurement code="QRS_TimeOff_05ms">32768</measurement>
+                <measurement code="RR_Distance_05ms">1044</measurement>
+              </measurements>
+            </event>
+            <event position="18500">
+              <classification code="eventUnknown"/>
+              <measurements>
+                <measurement code="T_TimeOff_05ms">32768</measurement>
+                <measurement code="BSA_Group_Idx">0</measurement>
+                <measurement code="QRS_TimeOn_05ms">32768</measurement>
+                <measurement code="QRS_TimeOff_05ms">32768</measurement>
+                <measurement code="RR_Distance_05ms">1476</measurement>
+              </measurements>
+            </event>
+            <event position="18990">
+              <classification code="eventUnknown"/>
+              <measurements>
+                <measurement code="T_TimeOff_05ms">32768</measurement>
+                <measurement code="BSA_Group_Idx">0</measurement>
+                <measurement code="QRS_TimeOn_05ms">32768</measurement>
+                <measurement code="QRS_TimeOff_05ms">32768</measurement>
+                <measurement code="RR_Distance_05ms">1960</measurement>
+              </measurements>
+            </event>
+            <event position="19481">
+              <classification code="eventUnknown"/>
+              <measurements>
+                <measurement code="T_TimeOff_05ms">32768</measurement>
+                <measurement code="BSA_Group_Idx">0</measurement>
+                <measurement code="QRS_TimeOn_05ms">32768</measurement>
+                <measurement code="QRS_TimeOff_05ms">32768</measurement>
+                <measurement code="RR_Distance_05ms">1964</measurement>
+              </measurements>
+            </event>
+            <event position="19972">
+              <classification code="eventUnknown"/>
+              <measurements>
+                <measurement code="T_TimeOff_05ms">32768</measurement>
+                <measurement code="BSA_Group_Idx">0</measurement>
+                <measurement code="QRS_TimeOn_05ms">32768</measurement>
+                <measurement code="QRS_TimeOff_05ms">32768</measurement>
+                <measurement code="RR_Distance_05ms">1964</measurement>
+              </measurements>
+            </event>
+            <event position="20462">
+              <classification code="eventUnknown"/>
+              <measurements>
+                <measurement code="T_TimeOff_05ms">32768</measurement>
+                <measurement code="BSA_Group_Idx">0</measurement>
+                <measurement code="QRS_TimeOn_05ms">32768</measurement>
+                <measurement code="QRS_TimeOff_05ms">32768</measurement>
+                <measurement code="RR_Distance_05ms">1960</measurement>
+              </measurements>
+            </event>
+            <event position="20954">
+              <classification code="eventUnknown"/>
+              <measurements>
+                <measurement code="T_TimeOff_05ms">32768</measurement>
+                <measurement code="BSA_Group_Idx">0</measurement>
+                <measurement code="QRS_TimeOn_05ms">32768</measurement>
+                <measurement code="QRS_TimeOff_05ms">32768</measurement>
+                <measurement code="RR_Distance_05ms">1968</measurement>
+              </measurements>
+            </event>
+            <event position="21443">
+              <classification code="eventUnknown"/>
+              <measurements>
+                <measurement code="T_TimeOff_05ms">32768</measurement>
+                <measurement code="BSA_Group_Idx">0</measurement>
+                <measurement code="QRS_TimeOn_05ms">32768</measurement>
+                <measurement code="QRS_TimeOff_05ms">32768</measurement>
+                <measurement code="RR_Distance_05ms">1956</measurement>
+              </measurements>
+            </event>
+            <event position="21934">
+              <classification code="eventUnknown"/>
+              <measurements>
+                <measurement code="T_TimeOff_05ms">32768</measurement>
+                <measurement code="BSA_Group_Idx">0</measurement>
+                <measurement code="QRS_TimeOn_05ms">32768</measurement>
+                <measurement code="QRS_TimeOff_05ms">32768</measurement>
+                <measurement code="RR_Distance_05ms">1964</measurement>
+              </measurements>
+            </event>
+            <event position="22425">
+              <classification code="eventUnknown"/>
+              <measurements>
+                <measurement code="T_TimeOff_05ms">32768</measurement>
+                <measurement code="BSA_Group_Idx">0</measurement>
+                <measurement code="QRS_TimeOn_05ms">32768</measurement>
+                <measurement code="QRS_TimeOff_05ms">32768</measurement>
+                <measurement code="RR_Distance_05ms">1964</measurement>
+              </measurements>
+            </event>
+            <event position="22915">
+              <classification code="eventUnknown"/>
+              <measurements>
+                <measurement code="T_TimeOff_05ms">32768</measurement>
+                <measurement code="BSA_Group_Idx">0</measurement>
+                <measurement code="QRS_TimeOn_05ms">32768</measurement>
+                <measurement code="QRS_TimeOff_05ms">32768</measurement>
+                <measurement code="RR_Distance_05ms">1960</measurement>
+              </measurements>
+            </event>
+            <event position="23406">
+              <classification code="eventUnknown"/>
+              <measurements>
+                <measurement code="T_TimeOff_05ms">32768</measurement>
+                <measurement code="BSA_Group_Idx">0</measurement>
+                <measurement code="QRS_TimeOn_05ms">32768</measurement>
+                <measurement code="QRS_TimeOff_05ms">32768</measurement>
+                <measurement code="RR_Distance_05ms">1964</measurement>
+              </measurements>
+            </event>
+            <event position="23896">
+              <classification code="eventUnknown"/>
+              <measurements>
+                <measurement code="T_TimeOff_05ms">32768</measurement>
+                <measurement code="BSA_Group_Idx">0</measurement>
+                <measurement code="QRS_TimeOn_05ms">32768</measurement>
+                <measurement code="QRS_TimeOff_05ms">32768</measurement>
+                <measurement code="RR_Distance_05ms">1960</measurement>
+              </measurements>
+            </event>
+            <event position="24387">
+              <classification code="eventUnknown"/>
+              <measurements>
+                <measurement code="T_TimeOff_05ms">32768</measurement>
+                <measurement code="BSA_Group_Idx">0</measurement>
+                <measurement code="QRS_TimeOn_05ms">32768</measurement>
+                <measurement code="QRS_TimeOff_05ms">32768</measurement>
+                <measurement code="RR_Distance_05ms">1964</measurement>
+              </measurements>
+            </event>
+            <event position="24879">
+              <classification code="eventUnknown"/>
+              <measurements>
+                <measurement code="T_TimeOff_05ms">32768</measurement>
+                <measurement code="BSA_Group_Idx">0</measurement>
+                <measurement code="QRS_TimeOn_05ms">32768</measurement>
+                <measurement code="QRS_TimeOff_05ms">32768</measurement>
+                <measurement code="RR_Distance_05ms">1968</measurement>
+              </measurements>
+            </event>
+            <event position="25369">
+              <classification code="eventUnknown"/>
+              <measurements>
+                <measurement code="T_TimeOff_05ms">32768</measurement>
+                <measurement code="BSA_Group_Idx">0</measurement>
+                <measurement code="QRS_TimeOn_05ms">32768</measurement>
+                <measurement code="QRS_TimeOff_05ms">32768</measurement>
+                <measurement code="RR_Distance_05ms">1960</measurement>
+              </measurements>
+            </event>
+            <event position="25631">
+              <classification code="eventUnknown"/>
+              <measurements>
+                <measurement code="T_TimeOff_05ms">32768</measurement>
+                <measurement code="BSA_Group_Idx">0</measurement>
+                <measurement code="QRS_TimeOn_05ms">32768</measurement>
+                <measurement code="QRS_TimeOff_05ms">32768</measurement>
+                <measurement code="RR_Distance_05ms">1048</measurement>
+              </measurements>
+            </event>
+            <event position="26000">
+              <classification code="eventUnknown"/>
+              <measurements>
+                <measurement code="T_TimeOff_05ms">32768</measurement>
+                <measurement code="BSA_Group_Idx">0</measurement>
+                <measurement code="QRS_TimeOn_05ms">32768</measurement>
+                <measurement code="QRS_TimeOff_05ms">32768</measurement>
+                <measurement code="RR_Distance_05ms">1476</measurement>
+              </measurements>
+            </event>
+            <event position="26490">
+              <classification code="eventUnknown"/>
+              <measurements>
+                <measurement code="T_TimeOff_05ms">32768</measurement>
+                <measurement code="BSA_Group_Idx">0</measurement>
+                <measurement code="QRS_TimeOn_05ms">32768</measurement>
+                <measurement code="QRS_TimeOff_05ms">32768</measurement>
+                <measurement code="RR_Distance_05ms">1960</measurement>
+              </measurements>
+            </event>
+            <event position="26981">
+              <classification code="eventUnknown"/>
+              <measurements>
+                <measurement code="T_TimeOff_05ms">32768</measurement>
+                <measurement code="BSA_Group_Idx">0</measurement>
+                <measurement code="QRS_TimeOn_05ms">32768</measurement>
+                <measurement code="QRS_TimeOff_05ms">32768</measurement>
+                <measurement code="RR_Distance_05ms">1964</measurement>
+              </measurements>
+            </event>
+            <event position="27472">
+              <classification code="eventUnknown"/>
+              <measurements>
+                <measurement code="T_TimeOff_05ms">32768</measurement>
+                <measurement code="BSA_Group_Idx">0</measurement>
+                <measurement code="QRS_TimeOn_05ms">32768</measurement>
+                <measurement code="QRS_TimeOff_05ms">32768</measurement>
+                <measurement code="RR_Distance_05ms">1964</measurement>
+              </measurements>
+            </event>
+            <event position="27963">
+              <classification code="eventUnknown"/>
+              <measurements>
+                <measurement code="T_TimeOff_05ms">32768</measurement>
+                <measurement code="BSA_Group_Idx">0</measurement>
+                <measurement code="QRS_TimeOn_05ms">32768</measurement>
+                <measurement code="QRS_TimeOff_05ms">32768</measurement>
+                <measurement code="RR_Distance_05ms">1964</measurement>
+              </measurements>
+            </event>
+            <event position="28454">
+              <classification code="eventUnknown"/>
+              <measurements>
+                <measurement code="T_TimeOff_05ms">32768</measurement>
+                <measurement code="BSA_Group_Idx">0</measurement>
+                <measurement code="QRS_TimeOn_05ms">32768</measurement>
+                <measurement code="QRS_TimeOff_05ms">32768</measurement>
+                <measurement code="RR_Distance_05ms">1964</measurement>
+              </measurements>
+            </event>
+            <event position="28944">
+              <classification code="eventUnknown"/>
+              <measurements>
+                <measurement code="T_TimeOff_05ms">32768</measurement>
+                <measurement code="BSA_Group_Idx">0</measurement>
+                <measurement code="QRS_TimeOn_05ms">32768</measurement>
+                <measurement code="QRS_TimeOff_05ms">32768</measurement>
+                <measurement code="RR_Distance_05ms">1960</measurement>
+              </measurements>
+            </event>
+            <event position="29434">
+              <classification code="eventUnknown"/>
+              <measurements>
+                <measurement code="T_TimeOff_05ms">32768</measurement>
+                <measurement code="BSA_Group_Idx">0</measurement>
+                <measurement code="QRS_TimeOn_05ms">32768</measurement>
+                <measurement code="QRS_TimeOff_05ms">32768</measurement>
+                <measurement code="RR_Distance_05ms">1960</measurement>
+              </measurements>
+            </event>
+            <event position="29925">
+              <classification code="eventUnknown"/>
+              <measurements>
+                <measurement code="T_TimeOff_05ms">32768</measurement>
+                <measurement code="BSA_Group_Idx">0</measurement>
+                <measurement code="QRS_TimeOn_05ms">32768</measurement>
+                <measurement code="QRS_TimeOff_05ms">32768</measurement>
+                <measurement code="RR_Distance_05ms">1964</measurement>
+              </measurements>
+            </event>
+            <event position="30415">
+              <classification code="eventUnknown"/>
+              <measurements>
+                <measurement code="T_TimeOff_05ms">32768</measurement>
+                <measurement code="BSA_Group_Idx">0</measurement>
+                <measurement code="QRS_TimeOn_05ms">32768</measurement>
+                <measurement code="QRS_TimeOff_05ms">32768</measurement>
+                <measurement code="RR_Distance_05ms">1960</measurement>
+              </measurements>
+            </event>
+            <event position="30906">
+              <classification code="eventUnknown"/>
+              <measurements>
+                <measurement code="T_TimeOff_05ms">32768</measurement>
+                <measurement code="BSA_Group_Idx">0</measurement>
+                <measurement code="QRS_TimeOn_05ms">32768</measurement>
+                <measurement code="QRS_TimeOff_05ms">32768</measurement>
+                <measurement code="RR_Distance_05ms">1964</measurement>
+              </measurements>
+            </event>
+            <event position="31398">
+              <classification code="eventUnknown"/>
+              <measurements>
+                <measurement code="T_TimeOff_05ms">32768</measurement>
+                <measurement code="BSA_Group_Idx">0</measurement>
+                <measurement code="QRS_TimeOn_05ms">32768</measurement>
+                <measurement code="QRS_TimeOff_05ms">32768</measurement>
+                <measurement code="RR_Distance_05ms">1968</measurement>
+              </measurements>
+            </event>
+            <event position="31887">
+              <classification code="eventUnknown"/>
+              <measurements>
+                <measurement code="T_TimeOff_05ms">32768</measurement>
+                <measurement code="BSA_Group_Idx">0</measurement>
+                <measurement code="QRS_TimeOn_05ms">32768</measurement>
+                <measurement code="QRS_TimeOff_05ms">32768</measurement>
+                <measurement code="RR_Distance_05ms">1956</measurement>
+              </measurements>
+            </event>
+            <event position="32378">
+              <classification code="eventUnknown"/>
+              <measurements>
+                <measurement code="T_TimeOff_05ms">32768</measurement>
+                <measurement code="BSA_Group_Idx">0</measurement>
+                <measurement code="QRS_TimeOn_05ms">32768</measurement>
+                <measurement code="QRS_TimeOff_05ms">32768</measurement>
+                <measurement code="RR_Distance_05ms">1964</measurement>
+              </measurements>
+            </event>
+          </eventTable>
+        </diagnosticStep>
+        <diagnosticStep name="globalResults">
+          <measurements>
+            <measurement code="HR_bpm">64</measurement>
+          </measurements>
+          <statements>
+            <statement>
+              <value>User statement 1</value>
+            </statement>
+          </statements>
+        </diagnosticStep>
+        <diagnosticStep name="HrvAnalysis">
+          <eventTable type="HeartRate">
+            <event start="2500" length="10000">
+              <measurements>
+                <measurement code="HR_bpm">66</measurement>
+              </measurements>
+            </event>
+            <event start="12500" length="10000">
+              <measurements>
+                <measurement code="HR_bpm">63</measurement>
+              </measurements>
+            </event>
+            <event start="22500" length="10000">
+              <measurements>
+                <measurement code="HR_bpm">63</measurement>
+              </measurements>
+            </event>
+          </eventTable>
+          <measurements>
+            <measurement code="AvgHR_bpm">64</measurement>
+            <measurement code="AvgRR_ms">937</measurement>
+            <measurement code="pRR50_percentage">18</measurement>
+            <measurement code="MinRR_ms">522</measurement>
+            <measurement code="MaxRR_ms">984</measurement>
+            <measurement code="MinHR_bpm">63</measurement>
+            <measurement code="MaxHR_bpm">66</measurement>
+            <measurement code="RRcount">63</measurement>
+            <measurement code="SDRR_ms">124</measurement>
+          </measurements>
+        </diagnosticStep>
+        <diagnosticStep name="pacemakerAnalysis">
+          <eventTable type="Pacing"/>
+        </diagnosticStep>
+        <analysedDatetime>2023-12-06T14:46:14</analysedDatetime>
+        <analyst userGuid="{b5ca9896-6023-4673-98b0-694058729f5d}"/>
+      </analysis>
+      <results>
+        <conclusion valid="true">2User statement 1</conclusion>
+        <medicalFindings valid="true">2Doctors summary</medicalFindings>
+        <evaluatedDatetime>2023-12-06T14:46:14</evaluatedDatetime>
+      </results>
+    </examination>
+  </examinations>
+</BtlXmlNg>

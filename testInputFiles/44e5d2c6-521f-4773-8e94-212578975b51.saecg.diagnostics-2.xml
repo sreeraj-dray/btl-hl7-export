@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BtlXmlNg version="1.0.3">
+  <header>
+    <hardware category="ecg" model="BTL 8 Elite" serialNumber="dinesh-0782-"/>
+    <software name="ECG2" version="1.dinesh-2023-12-05T21:12:22+05:30"/>
+    <createdDatetime>2023-12-06T14:55:32</createdDatetime>
+  </header>
+  <users>
+    <user guid="{b5ca9896-6023-4673-98b0-694058722222}" type="unknown">
+		<firstName>fn-2</firstName>
+      <surname>admin</surname>
+    </user>
+  </users>
+  <patients>
+    <patient guid="{d98bb959-8a86-4266-93b0-959b3c2d1222}" type="regular" demo="true">
+		<firstName>fn-2</firstName>
+      <surname>SAECG</surname>
+      <titleBefore/>
+      <externalId origin="HIS"/>
+      <classification>European</classification>
+    </patient>
+  </patients>
+  <examinations>
+    <examination guid="{56778d78-958b-44c7-bf3d-3c3964402222}" patientGuid="{d98bb959-8a86-4266-93b0-959b3c2d2222}" type="saecg" demo="true">
+      <patientSnapshot>
+        <classification>European</classification>
+      </patientSnapshot>
+      <acquisition>
+        <sourceDevice model="BTL 8 Elite" revision="Desktop-100" swVersion="1.dinesh-2023-12-05T" serialNumber="dinesh-0782-">
+          <ecgDevice>
+            <profile>ACable_12leads</profile>
+          </ecgDevice>
+        </sourceDevice>
+        <rawData guid="{eea40b6c-6b36-49f2-b0bd-5a6184b3e161}">
+          <recordedDatetime>2023-12-06T14:40:05</recordedDatetime>
+          <signal>
+            <channel name="I" sampleRate="1000" dataType="int" sensitivity="14084" bitDepth="24"/>
+            <channel name="II" sampleRate="1000" dataType="int" sensitivity="14084" bitDepth="24"/>
+            <channel name="V1" sampleRate="1000" dataType="int" sensitivity="14084" bitDepth="24"/>
+            <channel name="V2" sampleRate="1000" dataType="int" sensitivity="14084" bitDepth="24"/>
+            <channel name="V3" sampleRate="1000" dataType="int" sensitivity="14084" bitDepth="24"/>
+            <channel name="V4" sampleRate="1000" dataType="int" sensitivity="14084" bitDepth="24"/>
+            <channel name="V5" sampleRate="1000" dataType="int" sensitivity="14084" bitDepth="24"/>
+            <channel name="V6" sampleRate="1000" dataType="int" sensitivity="14084" bitDepth="24"/>
+            <channel name="physicalLeadoffR" sampleRate="1000" dataType="byte"/>
+            <channel name="physicalLeadoffL" sampleRate="1000" dataType="byte"/>
+            <channel name="physicalLeadoffF" sampleRate="1000" dataType="byte"/>
+            <channel name="physicalLeadoffC1" sampleRate="1000" dataType="byte"/>
+            <channel name="physicalLeadoffC2" sampleRate="1000" dataType="byte"/>
+            <channel name="physicalLeadoffC3" sampleRate="1000" dataType="byte"/>
+            <channel name="physicalLeadoffC4" sampleRate="1000" dataType="byte"/>
+            <channel name="physicalLeadoffC5" sampleRate="1000" dataType="byte"/>
+            <channel name="physicalLeadoffC6" sampleRate="1000" dataType="byte"/>
+            <interleaved serialization="Binary" endianity="LE" fileName="f9fabc40-bbc1-434c-bdc8-4dc4d6214c37.raw.data"/>
+          </signal>
+        </rawData>
+        <acquisitor userGuid="{b5ca9896-6023-4673-98b0-694058729f5d}"/>
+      </acquisition>
+      <analysis rawDataGuid="{eea40b6c-6b36-49f2-b0bd-5a6184b3e161}">
+        <analysers>
+          <analyser module="EcgDiag" version="7.0.5.200"/>
+        </analysers>
+        <properties>
+          <property name="stripRange">
+            <start>10400</start>
+            <length>251600</length>
+          </property>
+          <property name="preExaminationStripRange">
+            <start>0</start>
+            <length>10400</length>
+          </property>
+          <property name="beatsAmount">
+            <beatsAveraged>250</beatsAveraged>
+            <beatsDetected>250</beatsDetected>
+            <isEndCondition>true</isEndCondition>
+          </property>
+          <property name="samplesAmount">
+            <value>262000</value>
+            <isEndCondition>false</isEndCondition>
+          </property>
+        </properties>
+        <diagnosticStep name="filteredSignal">
+          <processedData>
+            <recordedDatetime>2023-12-06T14:40:05</recordedDatetime>
+            <appliedFilters>
+              <filter type="DF_AdaptiveMains, DF_AdaptiveMyoWaveletNoPace, DF_KALMAN"/>
+            </appliedFilters>
+            <signal>
+              <channel name="X" sampleRate="500" dataType="short" sensitivity="1000"/>
+              <channel name="Y" sampleRate="500" dataType="short" sensitivity="1000"/>
+              <channel name="Z" sampleRate="500" dataType="short" sensitivity="1000"/>
+              <channel name="leadoffX" sampleRate="500" dataType="byte" sensitivity="1000"/>
+              <channel name="leadoffY" sampleRate="500" dataType="byte" sensitivity="1000"/>
+              <channel name="leadoffZ" sampleRate="500" dataType="byte" sensitivity="1000"/>
+              <interleaved serialization="Binary" endianity="LE" fileName="13683712-08b3-4c1b-91c5-b6aee0db5ec8.filtered.data"/>
+            </signal>
+          </processedData>
+        </diagnosticStep>
+        <diagnosticStep name="templateBeat">
+          <processedData>
+            <recordedDatetime>2023-12-06T14:40:05</recordedDatetime>
+            <signal>
+              <channel name="X" sampleRate="500" dataType="short" sensitivity="1000" serialization="NumberSequence">-71 -71 -71 -70 -69 -69 -67 -67 -64 -60 -56 -52 -47 -41 -34 -27 -21 -15 -9 -4 1 5 7 10 11 13 14 15 15 15 14 12 11 9 6 2 -1 -6 -11 -16 -23 -29 -35 -43 -49 -55 -61 -64 -66 -67 -69 -71 -72 -73 -74 -74 -74 -74 -74 -74 -74 -74 -74 -73 -73 -73 -73 -73 -73 -73 -73 -73 -73 -73 -73 -73 -73 -73 -72 -72 -73 -73 -74 -75 -76 -79 -82 -84 -86 -86 -87 -98 -109 -109 -132 -154 -163 -143 -92 -19 91 220 320 417 550 675 762 816 821 727 624 552 475 344 297 303 311 342 346 339 329 322 319 318 318 318 318 318 318 317 317 316 315 314 313 312 311 310 309 307 306 306 305 304 303 302 301 300 298 297 296 295 294 292 291 289 288 286 284 282 280 278 276 274 272 270 267 264 262 260 258 256 253 251 248 246 243 241 238 236 234 232 230 229 227 225 222 220 218 215 213 210 207 205 202 198 195 192 189 187 183 180 177 173 170 166 163 159 155 151 147 142 137 133 129 125 121 118 115 112 111 113 117 122 127 132 138 145 152 157 162 166 170 172 175 176 177 177 176 174 172 169 166 163 159 154 150 145 139 132 126 120 112 103 94 83 72 61 49 38 27 17 9 0 -8 -15 -23 -29 -34 -37 -40 -41 -43 -44 -46 -47 -47 -47 -47 -47 -47 -47 -47 -47 -47 -46 -46 -46 -46 -46 -46 -46 -46 -46 -45 -45 -45 -45 -45 -45 </channel>
+              <channel name="Y" sampleRate="500" dataType="short" sensitivity="1000" serialization="NumberSequence">-70 -70 -70 -70 -69 -69 -68 -67 -65 -62 -59 -55 -50 -44 -37 -30 -23 -15 -8 -1 6 11 15 19 21 23 25 26 26 25 24 22 20 16 10 7 0 -6 -13 -21 -29 -36 -43 -49 -55 -59 -63 -65 -67 -70 -71 -72 -73 -73 -73 -73 -73 -73 -73 -73 -73 -73 -73 -73 -73 -72 -72 -72 -72 -72 -72 -72 -72 -72 -72 -72 -72 -72 -72 -72 -72 -72 -72 -73 -74 -75 -77 -79 -80 -82 -82 -82 -87 -99 -106 -117 -120 -123 -113 -67 1 62 131 231 331 406 493 588 633 614 537 494 448 417 384 377 389 395 392 386 381 379 377 377 377 378 378 378 378 377 377 376 375 375 374 373 372 370 369 367 366 365 364 363 362 361 359 358 357 355 354 351 349 348 347 345 343 341 339 337 334 332 329 327 325 324 322 319 317 315 312 310 307 305 302 299 296 293 290 287 284 282 279 276 273 270 267 264 261 257 254 251 249 246 242 239 236 232 229 225 221 218 214 210 206 201 197 192 188 183 177 172 166 161 156 152 147 143 138 135 133 136 142 148 155 161 169 177 184 190 195 199 203 206 209 211 211 211 210 208 205 202 200 196 191 186 180 174 167 159 150 144 133 122 111 99 85 73 60 47 36 25 15 5 -5 -14 -22 -28 -33 -35 -38 -39 -41 -43 -44 -45 -46 -46 -46 -46 -46 -45 -45 -45 -45 -45 -45 -45 -45 -44 -44 -44 -44 -44 -43 -43 -43 -43 -43 -42 </channel>
+              <channel name="Z" sampleRate="500" dataType="short" sensitivity="1000" serialization="NumberSequence">-2 -2 -2 -2 -3 -3 -4 -5 -5 -7 -9 -11 -13 -16 -19 -22 -25 -28 -30 -33 -35 -37 -38 -39 -40 -41 -42 -42 -42 -42 -42 -41 -40 -39 -37 -36 -35 -33 -29 -27 -24 -22 -19 -17 -15 -12 -10 -9 -7 -6 -5 -4 -3 -3 -3 -2 -2 -2 -2 -2 -2 -2 -2 -2 -2 -2 -2 -2 -2 -2 -2 -2 -2 -2 -2 -2 -2 -2 -2 -2 -2 -2 -2 -1 -1 -2 -3 -5 -7 -8 3 4 5 8 -7 -36 -71 -105 -143 -176 -227 -274 -297 -310 -334 -345 -286 -179 -44 91 211 391 453 162 102 63 36 7 32 41 35 27 20 13 12 12 12 12 12 13 12 12 12 12 12 11 10 10 10 10 10 10 10 10 10 10 10 10 10 9 9 8 8 8 8 8 8 8 9 9 9 10 10 10 10 11 11 11 11 10 10 10 10 10 9 9 9 9 9 9 10 10 9 9 9 9 9 9 8 7 7 8 7 7 6 6 6 6 7 7 7 7 7 7 7 7 6 6 6 5 6 6 6 6 6 6 6 5 5 5 5 6 6 6 6 6 7 7 7 7 7 7 8 8 8 8 8 7 7 7 7 7 7 6 6 6 6 5 4 4 4 4 4 4 4 3 3 3 3 3 3 2 2 2 1 1 0 0 0 0 -1 -1 -1 -1 -2 -2 -2 -2 -2 -2 -2 -2 -2 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 </channel>
+            </signal>
+          </processedData>
+        </diagnosticStep>
+        <diagnosticStep name="resultsFilter25">
+          <processedData>
+            <recordedDatetime>2023-12-06T14:40:05</recordedDatetime>
+            <signal>
+              <channel name="vectorMagnitude" sampleRate="1000" dataType="short" sensitivity="100000" serialization="NumberSequence">0 157 70 153 83 116 78 97 103 56 106 76 74 33 118 48 64 55 30 70 87 61 9 54 28 73 44 8 28 36 37 44 43 51 48 70 41 64 72 31 58 49 62 139 79 42 80 54 56 137 86 123 65 138 91 153 82 47 129 62 102 121 83 58 110 51 80 115 97 83 99 152 49 101 67 100 84 71 88 95 75 45 66 25 29 406 851 972 1229 1630 2216 2460 2631 3059 3654 3284 3154 3488 4580 5936 7529 8848 11192 13053 15158 17758 20862 20913 21259 19916 18447 18295 18559 19306 18103 15585 14170 15082 15445 19003 28572 26767 26914 25735 24529 19513 16911 19268 25253 32767 32767 11485 295 318 662 877 1327 1608 1448 538 248 298 375 476 482 255 92 99 101 120 117 146 187 205 247 217 339 261 280 261 376 353 444 453 440 338 376 297 251 254 210 215 225 311 480 732 971 939 319 551 813 1236 484 407 532 687 386 359 361 446 403 509 477 530 533 654 455 360 235 265 264 501 830 1099 1488 1070 341 478 493 595 577 657 580 655 621 660 605 564 515 369 216 525 928 1158 1386 751 437 347 439 661 743 891 1080 773 597 545 698 954 946 260 532 557 550 442 369 262 274 172 131 299 240 247 424 761 737 714 755 389 430 324 302 312 423 799 671 1153 1382 602 634 615 628 606 612 673 731 1047 463 268 523 686 730 132 408 500 928 1357 711 496 789 1041 1000 833 662 200 181 410 819 1142 524 0 </channel>
+            </signal>
+          </processedData>
+          <measurements>
+            <measurement code="NoiseLevel_nV">3864</measurement>
+            <measurement code="RMS_Voltage_nV">185043</measurement>
+            <measurement code="LAS40_SignalDuration_05ms">6</measurement>
+            <measurement code="QRS_DurationFiltered_05ms">100</measurement>
+          </measurements>
+        </diagnosticStep>
+        <diagnosticStep name="resultsFilter40">
+          <processedData>
+            <recordedDatetime>2023-12-06T14:40:05</recordedDatetime>
+            <signal>
+              <channel name="vectorMagnitude" sampleRate="1000" dataType="short" sensitivity="100000" serialization="NumberSequence">0 147 82 133 103 98 96 80 113 53 107 67 59 31 98 43 33 81 32 77 74 59 18 54 24 53 29 30 45 45 34 46 41 46 36 57 35 63 81 32 58 45 55 135 71 41 76 66 56 135 93 115 67 118 103 139 102 28 133 64 96 124 71 63 95 56 65 120 96 95 89 154 50 95 74 83 90 62 100 95 75 39 59 23 37 389 762 776 921 1209 1585 1609 1578 1846 2264 1817 1693 2396 3681 4957 6296 6908 8308 9326 10240 11419 12879 11473 10748 8740 6902 7014 6878 7560 5992 4110 4150 8194 10245 13482 18728 18211 20449 21590 22871 18156 14488 11588 15714 27662 32767 10942 542 295 218 382 892 1316 1298 380 99 104 202 319 370 181 35 77 61 94 42 97 64 116 127 127 168 159 116 79 143 137 278 383 388 232 314 295 293 332 296 297 219 123 132 415 738 819 352 647 779 1330 647 129 246 444 145 124 136 171 171 274 269 371 443 668 580 547 454 487 181 85 437 822 1396 1171 447 95 142 214 235 320 298 417 455 575 611 670 697 627 199 237 649 991 1389 878 478 103 124 349 489 744 1095 912 551 397 538 911 1052 327 309 378 423 365 312 222 213 121 178 377 321 220 313 677 675 623 729 432 440 370 356 332 427 853 675 977 1371 666 451 379 425 390 427 476 607 1023 553 264 502 622 733 364 607 290 535 1148 588 95 348 660 734 689 612 115 189 201 593 1013 490 0 </channel>
+            </signal>
+          </processedData>
+          <measurements>
+            <measurement code="NoiseLevel_nV">2852</measurement>
+            <measurement code="RMS_Voltage_nV">128719</measurement>
+            <measurement code="LAS40_SignalDuration_05ms">6</measurement>
+            <measurement code="QRS_DurationFiltered_05ms">98</measurement>
+          </measurements>
+        </diagnosticStep>
+        <diagnosticStep name="resultsFilter80">
+          <processedData>
+            <recordedDatetime>2023-12-06T14:40:05</recordedDatetime>
+            <signal>
+              <channel name="vectorMagnitude" sampleRate="1000" dataType="short" sensitivity="100000" serialization="NumberSequence">0 123 107 106 126 88 99 81 102 72 83 43 38 50 76 63 18 81 32 50 51 44 48 42 23 38 24 40 36 20 17 34 55 34 31 43 38 55 80 35 41 28 45 125 70 46 72 70 47 124 106 93 72 90 118 130 111 33 109 82 63 119 63 68 91 64 57 112 107 74 72 141 80 77 93 71 93 68 88 76 70 46 49 38 41 318 542 372 388 637 703 521 448 742 1026 801 770 1427 2187 2682 3224 2818 3131 3649 3450 3610 4056 2094 1948 2040 1817 2268 1405 2239 1700 1146 1796 4982 5468 6382 4481 2807 3655 6346 11784 12605 15107 13280 9174 12290 24347 8992 467 490 428 403 174 696 983 250 113 104 90 134 268 144 74 25 13 44 29 48 40 27 7 50 86 90 97 137 166 99 51 220 267 29 45 39 41 83 100 184 232 270 214 70 433 684 454 1023 501 1011 583 66 91 379 202 8 47 18 108 122 134 118 111 217 199 183 222 467 437 497 341 101 758 840 372 43 48 78 67 31 142 131 212 158 167 239 438 671 522 506 368 430 813 616 454 266 333 299 193 107 715 895 646 501 192 451 908 474 135 135 168 168 173 122 241 283 91 270 380 357 317 544 620 413 581 422 285 273 416 371 411 824 802 369 923 505 230 164 291 301 394 164 190 860 718 305 174 380 763 362 593 429 183 781 550 334 184 352 333 415 533 224 406 370 239 731 409 0 </channel>
+            </signal>
+          </processedData>
+          <measurements>
+            <measurement code="NoiseLevel_nV">1952</measurement>
+            <measurement code="RMS_Voltage_nV">69323</measurement>
+            <measurement code="LAS40_SignalDuration_05ms">6</measurement>
+            <measurement code="QRS_DurationFiltered_05ms">92</measurement>
+          </measurements>
+        </diagnosticStep>
+        <analysedDatetime>2023-12-06T14:40:05</analysedDatetime>
+      </analysis>
+    </examination>
+  </examinations>
+</BtlXmlNg>

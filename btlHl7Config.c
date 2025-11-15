@@ -29,6 +29,77 @@ static char* orderStatusStrings[] = {
     NULL
 };
 
+static void processSslConfig(BtlHl7Export_t* pHl7Exp, xmlChar* valText, int id) {
+    if (!valText) {
+        BTLHL7EXP_ERR("[BTL_HL7_EXP XML Config] ERROR: SSL Config value is NULL for id=%d\n", id);
+        return;
+    }
+
+    switch (id) {
+
+    case EXP_CFG_SSL_ENABLE: {
+        if (strncasecmp((char*)valText, "Yes", 3) == 0) {
+            btlHl7ExpEnableSsl(pHl7Exp,1);
+            BTLHL7EXP_DBUG1("[BTL_HL7_EXP XML Config] SslEnable = Yes\n");
+        }
+        else if (strncasecmp((char*)valText, "No", 2) == 0) {
+            btlHl7ExpEnableSsl(pHl7Exp,0);
+            BTLHL7EXP_DBUG1("[BTL_HL7_EXP XML Config] SslEnable = No\n");
+        }
+        else {
+            BTLHL7EXP_ERR("[BTL_HL7_EXP XML Config] ERROR: Invalid SslEnable value (%s), must be Yes or No\n", valText);
+        }
+        break;
+    } // case EXP_CFG_SSL_ENABLE
+
+    case EXP_CFG_SSL_USE_OWN_CERT: {
+        if (strncasecmp((char*)valText, "Yes", 3) == 0) {
+            btlHl7ExpSslUseOwnCertificate(pHl7Exp,1);
+            BTLHL7EXP_DBUG1("[BTL_HL7_EXP XML Config] SslUseOwnCertificate = Yes\n");
+        }
+        else if (strncasecmp((char*)valText, "No", 2) == 0) {
+            btlHl7ExpSslUseOwnCertificate(pHl7Exp,0);
+            BTLHL7EXP_DBUG1("[BTL_HL7_EXP XML Config] SslUseOwnCertificate = No\n");
+        }
+        else {
+            BTLHL7EXP_ERR("[BTL_HL7_EXP XML Config] ERROR: Invalid SslUseOwnCertificate value (%s), must be Yes or No\n", valText);
+        }
+        break;
+    } // case EXP_CFG_SSL_USE_OWN_CERT
+
+    case EXP_CFG_SSL_VERIFY_PEER_MODE: {
+        int verifyMode = atoi((char*)valText);
+        if (verifyMode < 0 || verifyMode > 3) {
+            BTLHL7EXP_ERR("[BTL_HL7_EXP XML Config] ERROR: Invalid SslVerifyPeerMode value (%d), must be between 0 and 3\n", verifyMode);
+            break;
+        }
+        btlHl7ExpSslSetPeerVerifyMode(pHl7Exp,verifyMode);
+        BTLHL7EXP_DBUG1("[BTL_HL7_EXP XML Config] SslVerifyPeerMode = %d\n", verifyMode);
+        break;
+    } // case EXP_CFG_SSL_VERIFY_PEER_MODE
+
+    case EXP_CFG_SSL_PEER_HOST_MATCH_STR: {
+        btlHl7ExpSslSetPeerHostMatchStr(pHl7Exp,(char*)valText);
+        BTLHL7EXP_DBUG1("[BTL_HL7_EXP XML Config] SslPeerHostNameMatchStr = %s\n", valText);
+        break;
+    } // case EXP_CFG_SSL_PEER_HOST_MATCH_STR
+
+    default: {
+        BTLHL7EXP_ERR("[BTL_HL7_EXP XML Config] WARNING: Unknown SSL Config id=%d, value=%s\n", id, valText);
+        break;
+    }
+
+    } // end switch (id)
+
+}
+
+
+
+
+
+
+
+
 
 int btlHl7ExpLoadXmlConfig(BtlHl7Export_t* pHl7Exp, char* xmlFilePath) {
     xmlDoc* doc = xmlReadFile(xmlFilePath, NULL, 0);
@@ -62,7 +133,7 @@ int btlHl7ExpLoadXmlConfig(BtlHl7Export_t* pHl7Exp, char* xmlFilePath) {
                     continue;
                 }
 
-                xmlChar* idAttr = xmlGetProp(cfg, ( xmlChar*)"id");
+                xmlChar* idAttr = xmlGetProp(cfg, (xmlChar*)"id");
                 if (!idAttr) {
                     continue;
                 }
@@ -73,8 +144,15 @@ int btlHl7ExpLoadXmlConfig(BtlHl7Export_t* pHl7Exp, char* xmlFilePath) {
                 if (id <= 0 || id >= EXP_CFG_LAST_ID) {
                     continue;
                 }
-
+                
                 xmlChar* valText = xmlNodeGetContent(cfg);
+                if (id >= EXP_CFG_SSL_ENABLE && id < EXP_CFG_SSL_LAST) {
+                    processSslConfig(pHl7Exp,valText, id);
+                   if (valText) { 
+                     xmlFree(valText); 
+                     valText = 0;
+                   }
+                }
 
                 switch (id) {
                 case EXP_CFG_SERVER_IP: {

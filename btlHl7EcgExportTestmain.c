@@ -1,6 +1,7 @@
 ﻿//#define TEST_HL7 1 //NOTE: This is included in the build properties (Visual Studio) or on compile command line
 
 #ifdef TEST_HL7
+#define CREATE_GOLDEN_FILE
 
 #include <stdio.h>
 #include <string.h>
@@ -11,9 +12,11 @@
 #include "btlHl7Config.h"
 #include "btlHl7ExpSslCommon.h"
 
+
+
 #define BTLHL7EXP_TEST_LOAD_CFG_FROM_XML 1
 #ifdef BTLHL7EXP_SSL_EN  //from library.h file or compiler command line
-    #define BTLHL7EXP_TEST_SSL_EN 1  //enable SSL for all tests (WARNING: cfg from XML will override if enabled above!)
+  //  #define BTLHL7EXP_TEST_SSL_EN 1  //enable SSL for all tests (WARNING: cfg from XML will override if enabled above!)
         #define BTLHL7EXP_TEST_SSL_USE_OWN_CERT_EN 1    //enables the use of a client certificate and key, both must be set by user
         #define  BTLHL7EXP_TEST_SET_PEER_VERIFY_MODE_EN 1       //enables verification of remote server certificate, certificate+IPaddress or certificate+hostname 
                 //BTLHL7EXP_SSL_VERIFY_NONE=disable verification of peer, BTLHL7EXP_SSL_VERIFY_CA= verify only certificate
@@ -25,8 +28,23 @@
 //=====================================================================================================
 //====================== TEST configuration - define only one below (enable SSL above) ================
 
+
+
+#define BTLHL7EXP_TESTCASE_ECGRHYTHM1         1  // With Results Tag
+//#define BTLHL7EXP_TESTCASE_ECGRHYTHM1_DUMMY   1
+//#define BTLHL7EXP_TESTCASE_ECGRHYTHM2         1  // Without Conclusion Tag
+//#define BTLHL7EXP_TESTCASE_ECGRHYTHM2_DUMMY   1
+//#define BTLHL7EXP_TESTCASE_ECGREST            1  // Ecg Rest file
+//#define BTLHL7EXP_TESTCASE_ECGREST_DUMMY      1
+//#define BTLHL7EXP_TESTCASE_SAECG              1  // SAECG (Signal Averaged ECG)
+//#define BTLHL7EXP_TESTCASE_SAECG_DUMMY        1
+//#define BTLHL7EXP_TESTCASE_SEND_CANCEL      1  // Order cancel test
+
+
+
+
 //#define BTLHL7EXP_TESTCASE_ADHOC 1 //DO NOT ENABLE unless checking new test modifications
-#define BTLHL7EXP_TESTCASE_USE_EXDATA 1
+//#define BTLHL7EXP_TESTCASE_USE_EXDATA 1
 //#define BTLHL7EXP_TESTCASE_USE_EXDATA_WITH_USER_RECV_APP 1
 //#define BTLHL7EXP_TESTCASE_NO_EXDATA_DEF_VER_2P2 1
 //#define BTLHL7EXP_TESTCASE_NO_EXDATA_USER_SET_VER_APP_FAC 1
@@ -172,21 +190,113 @@ void waitForExportCompletion(BtlHl7Export_t* pHl7Exp) {
         }
     }
 }
-void runExportCase(BtlHl7Export_t* pHl7Exp,  char* pdf,  char* diagXml,  char* extraData, int extraLen,  char* testLabel) {
-    printf("\n--- Running Test Case: %s ---\n", testLabel);
-    int status = btlHl7ExportPdfReport(pHl7Exp, pdf, diagXml, extraData, extraLen);
-    if (status != 0) {
-     //   printf("Export FAILED for %s: status = %d\n", testLabel, status);
-        printf("Export FAILED for %s: status = %d\n", testLabel, status);
+    void runExportCase(BtlHl7Export_t* pHl7Exp,  char* pdf,  char* diagXml,  char* extraData, int extraLen,  char* testLabel) {
+        BTLHL7EXP_DBUG0("\n--- Running Test Case: %s ---\n", testLabel);
+        int status = btlHl7ExportPdfReport(pHl7Exp, pdf, diagXml, extraData, extraLen);
+        if (status != 0) {
+    
+            BTLHL7EXP_ERR("Export FAILED for %s: status = %d\n", testLabel, status);
 
-        return;
+            return;
+        }
+        waitForExportCompletion(pHl7Exp);
+        // Capture last HL7 message
+         const char* hl7Buf = pHl7Exp->hl7MsgDebugBuf;
+        size_t msgLen = (size_t)pHl7Exp->hl7MsgSize;
+
+        if (!hl7Buf || msgLen == 0) {
+            BTLHL7EXP_ERR("No HL7 message captured for %s (len=%zu)\n", testLabel, msgLen);
+            return;
+        }
+
+    #ifdef CREATE_GOLDEN_FILE
+   
+        // write the generated HL7 buffer into a file in 64KB chunks
+    
+        char outFile[512];
+        snprintf(outFile, sizeof(outFile), "..\\testExpected\\%s_expected.hl7.txt", testLabel);
+
+        FILE* fOut = fopen(outFile, "wb");
+        if (!fOut) {
+            BTLHL7EXP_ERR("Failed to create golden file: %s\n", outFile);
+            return;
+        }
+
+        const size_t CHUNK_SIZE = 64 * 1024;  // 64KB
+        size_t bytesLeft = msgLen;
+        const char* pCur = hl7Buf;
+
+        while (bytesLeft > 0) {
+            size_t bytesToWrite = (bytesLeft > CHUNK_SIZE) ? CHUNK_SIZE : bytesLeft;
+            size_t written = fwrite(pCur, 1, bytesToWrite, fOut);
+            if (written != bytesToWrite) {
+                BTLHL7EXP_ERR("Write error while creating golden file!\n");
+                fclose(fOut);
+                return;
+            }
+            pCur += written;
+            bytesLeft -= written;
+        }
+
+        fclose(fOut);
+        BTLHL7EXP_DBUG0("[DEBUG] Golden file written successfully: %s (%zu bytes)\n", outFile, msgLen);
+        return; // When creating golden, treat as success
+    #else
+    
+        // Normal mode: compare HL7 output with golden file (in memory)
+    
+        char goldenFile[512];
+        snprintf(goldenFile, sizeof(goldenFile), "..\\testExpected\\%s_expected.hl7.txt", testLabel);
+
+        FILE* fExp = fopen(goldenFile, "rb");
+        if (!fExp) {
+            BTLHL7EXP_ERR("Golden file not found: %s\n", goldenFile);
+            return -5;
+        }
+
+        fseek(fExp, 0, SEEK_END);
+        long goldenSize = ftell(fExp);
+        rewind(fExp);
+
+        if (goldenSize <= 0) {
+            fclose(fExp);
+            BTLHL7EXP_ERR("Golden file is empty or invalid: %s\n", goldenFile);
+            return -6;
+        }
+
+        // Compare in 64KB chunks
+        const size_t CHUNK_SIZE = 64 * 1024;
+        char* goldenChunk = (char*)malloc(CHUNK_SIZE);
+        if (!goldenChunk) {
+            fclose(fExp);
+            return -7;
+        }
+
+        size_t offset = 0;
+        int result = 0;
+        while (offset < msgLen) {
+            size_t toRead = (msgLen - offset > CHUNK_SIZE) ? CHUNK_SIZE : (msgLen - offset);
+            size_t r = fread(goldenChunk, 1, toRead, fExp);
+            if (r != toRead || memcmp(goldenChunk, hl7Buf + offset, toRead) != 0) {
+                result = 1; // mismatch
+                break;
+            }
+            offset += toRead;
+        }
+
+        free(goldenChunk);
+        fclose(fExp);
+
+        if (result == 0 && (long)msgLen == goldenSize) {
+            BTLHL7EXP_DBUG0(" TEST PASSED: %s matches golden file\n", testLabel);
+            return 0;
+        } else {
+            BTLHL7EXP_ERR(" TEST FAILED: %s does not match golden file\n", testLabel);
+            return 1;
+        }
+    #endif
     }
-    waitForExportCompletion(pHl7Exp);
-    Sleep(3);  //wait before sending next export (only for dummy test server
-    return;
-}
-
-
+    static char gHl7MsgDebugBuf[8 * 1024 * 1024];
 int main() {
 
     int extraDataSize;
@@ -201,15 +311,15 @@ int main() {
         printf("Executing from directory: %s\n================================\n\n", g_cwdStr);
     }
 
-    //printf("PDF File=%s, Server=%s:%u\n", gPdfFileName, gHl7ExpSrvIpAddrStr, gHl7ExpSrvPort);
+   
 
-    printf("Remote HIS/ PACS Server Ip : Port (initial defaults): %s : %u\n", gHl7ExpSrvIpAddrStr, gHl7ExpSrvPort);
-    printf("\nStarting export for PDF file: %s\n", gPdfFileName);
+    BTLHL7EXP_DBUG0("Remote HIS/ PACS Server Ip : Port (initial defaults): %s : %u\n", gHl7ExpSrvIpAddrStr, gHl7ExpSrvPort);
+    BTLHL7EXP_DBUG0("\nStarting export for PDF file: %s\n", gPdfFileName);
 
     // Test the logger redirection
     btlHl7ExpRegisterLogCallback(myLogger);  // Register the log callback
-   // btlHl7ExpSetLogLevel(BTLHL7EXP_DEFAULT_LOG_LEVEL); //passing 0 will disable all logs, default is no logs
-   // btlHl7ExpSetLogLevel(64);  //disable logging
+    // btlHl7ExpSetLogLevel(BTLHL7EXP_DEFAULT_LOG_LEVEL); //passing 0 will disable all logs, default is no logs
+    // btlHl7ExpSetLogLevel(64);  //disable logging
     btlHl7ExpSetLogLevel(BTL_HL7EXP_DBG_LVL_ERR |
         BTL_HL7EXP_DBG_LVL_DBG0 |
         BTL_HL7EXP_DBG_LVL_DBG1);   // = 50
@@ -218,38 +328,26 @@ int main() {
     BTLHL7EXP_DBUG1("Logger test: If you see this, DBUG1 prints are fine (BTL Log level 32)\n");
     BTLHL7EXP_ERR("Logger test : If you see this, ERR prints are fine(BTL Log level 2)\n");
 
-   //printf("\n############# Disabling logs!  #######################################################\n\n");
-    //btlHl7ExpSetLogLevel(0);  //disable logging
-   //btlHl7ExpSetLogLevel(32);
+    //printf("\n############# Disabling logs!  #######################################################\n\n");
+     //btlHl7ExpSetLogLevel(0);  //disable logging
+    //btlHl7ExpSetLogLevel(32);
 
-#ifdef UNDEF //DO NOT USE BELOW FUNCTIONS : DEPRECATED
-    // Case A: both comp1 and comp2
-    //btlHl7ExpSetSendingApplicationStr(pHl7Exp, "BTLApp1^Serial123");
-   // btlHl7ExpSetSendingFacilityStr(pHl7Exp, "ClinicA^DeptB");
-
-    // Case B: only comp2
-     btlHl7ExpSetSendingApplicationStr(pHl7Exp, "^Serial123");
-     btlHl7ExpSetSendingFacilityStr(pHl7Exp, "^DeptB");
-
-    // Case C: only comp1
-    // btlHl7ExpSetSendingApplicationStr(pHl7Exp, "BTLApp1");
-    // btlHl7ExpSetSendingFacilityStr(pHl7Exp, "ClinicA");
-
-#endif
-
+   
+    
+      
 
     // Initialize export module
     //ipaddr and port can be null.it can be later configured using btlHl7ExpSetSrvIp()
     //Init function below will start a thread for performing the export
     // only one export can be triggered at a time and next one can be triggered only after its completion
     btlHl7ExportInit(pHl7Exp, gHl7ExpSrvIpAddrStr, gHl7ExpSrvPort);
-
+      
     // ip address and port can be set at any time using below api call
    // btlHl7ExpSetSrvIp(pHl7Exp, gHl7ExpSrvIpAddrStr, gHl7ExpSrvPort);
-    
-    //optionally set the server timeout (how much time to wait for server responses)
-    //Default is 30 seconds if not configured with below call
 
+    //btlHl7ExpSetUnitTestMode(pHl7Exp, 1);
+    btlHl7ExpSetDebugBuffer(pHl7Exp, gHl7MsgDebugBuf, sizeof(gHl7MsgDebugBuf));
+    
 
 
 #ifdef BTLHL7EXP_TEST_SSL_EN
@@ -435,6 +533,70 @@ int main() {
     waitForExportCompletion(pHl7Exp);
 
     goto test_end;
+#endif
+
+      // ------------------------------------------------------------
+// TEST EXECUTION BASED ON ENABLED MACROS
+// ------------------------------------------------------------
+ extraDataSize = (int)strlen(gExtraData2);
+ int extraDataSizeA = (int)strlen(gExtraData2a);
+
+
+#ifdef BTLHL7EXP_TESTCASE_ECGRHYTHM1
+    char filename_ecgrhythm[256] = "..\\testInputFiles\\84ba0f4d-d75b-4eeb-9004-6a606e6dc563.EcgRhythm-WithResultsTag.diagnostics.xml";////EcgRhythm with conclusion tag/ doctor's statement
+    runExportCase(pHl7Exp, gPdfFileName, filename_ecgrhythm, gExtraData2, extraDataSize,
+                    "CASE-1_ECG_Rhythm_With_Doctor_Statement_1");
+#endif
+
+#ifdef BTLHL7EXP_TESTCASE_ECGRHYTHM1_DUMMY
+    char filename_ecgrhythm_dummy[256] = "..\\testInputFiles\\84ba0f4d-d75b-4eeb-9004-6a606e6dc563.EcgRhythm-WithResultsTag.diagnostics-2.xml";
+    runExportCase(pHl7Exp, gPdfFileName, filename_ecgrhythm_dummy, gExtraData2, extraDataSize,
+                  "CASE 2: ECG Rhythm (With Doctor’s Statement - Dummy)");
+#endif
+
+#ifdef BTLHL7EXP_TESTCASE_ECGRHYTHM2
+    char filename_ecgrhythm2[256] = "..\\testInputFiles\\983ff92d-5f75-4530-bc8b-6d3641043d3b.EcgRhythm-NoConclusionTag.diagnostics.xml"; //EcgRhythm without conclusion tag/ doctor's statement
+    runExportCase(pHl7Exp, gPdfFileName, filename_ecgrhythm2, gExtraData2, extraDataSize,
+                  "CASE 3: ECG Rhythm (No Conclusion Tag - Original)");
+#endif
+
+#ifdef BTLHL7EXP_TESTCASE_ECGRHYTHM2_DUMMY
+    char filename_ecgrhythm2_dummy[256] = "..\\testInputFiles\\983ff92d-5f75-4530-bc8b-6d3641043d3b.EcgRhythm-NoConclusionTag.diagnostics-2.xml";
+    runExportCase(pHl7Exp, gPdfFileName, filename_ecgrhythm2_dummy, gExtraData2a, extraDataSize,
+                  "CASE 4: ECG Rhythm (No Conclusion Tag - Dummy)");
+#endif
+
+#ifdef BTLHL7EXP_TESTCASE_ECGREST
+    char filename_ecgrest[256] = "..\\testInputFiles\\d60b513e-d780-4ba0-8e57-a66d2ff8d42b.EcgRest.diagnostics.xml"; //EcgRest which has all values
+    runExportCase(pHl7Exp, gPdfFileName, filename_ecgrest, gExtraData2, extraDataSize,
+                  "CASE 5: ECG Rest (Original)");
+#endif
+
+#ifdef BTLHL7EXP_TESTCASE_ECGREST_DUMMY
+    char filename_ecgrest2[256] = "..\\testInputFiles\\d60b513e-d780-4ba0-8e57-a66d2ff8d42b.EcgRest.diagnostics-2.xml";
+    runExportCase(pHl7Exp, gPdfFileName, filename_ecgrest2, gExtraData2a, extraDataSize,
+                  "CASE 6: ECG Rest (Dummy)");
+#endif
+
+#ifdef BTLHL7EXP_TESTCASE_SAECG
+    char filename_secg[256] = "..\\testInputFiles\\44e5d2c6-521f-4773-8e94-212578975b51.saecg.diagnostics.xml";//saecg
+    runExportCase(pHl7Exp, gPdfFileName, filename_secg, gExtraData2, extraDataSize,
+                  "CASE 7: SAECG (Original)");
+#endif
+
+#ifdef BTLHL7EXP_TESTCASE_SAECG_DUMMY
+    char filename_secg2[256] = "..\\testInputFiles\\44e5d2c6-521f-4773-8e94-212578975b51.saecg.diagnostics-2.xml";
+    runExportCase(pHl7Exp, gPdfFileName, filename_secg2, gExtraData2a, extraDataSize,
+                  "CASE 8: SAECG (Dummy)");
+#endif
+
+#ifdef BTLHL7EXP_TESTCASE_SEND_CANCEL
+    printf("\n--- Running Cancel Order Test ---\n");
+    int cancelStatus = btlHl7ExpSendOrderCancelled(pHl7Exp, gExtraData2, extraDataSize);
+    if (cancelStatus != 0)
+        printf("Cancel order failed: %d\n", cancelStatus);
+    else
+        waitForExportCompletion(pHl7Exp);
 #endif
 
   

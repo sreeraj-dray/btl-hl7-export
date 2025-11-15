@@ -55,6 +55,7 @@
 	  <ConfigItem id="14" name="OrderType">ECG</ConfigItem> <!-- OBR.4: Default exam type used for matching and export -->
     
     <!-- SSL (Secure Server Layer) configuration -->
+	<ConfigItem id="1000" name="SslEnable">Yes</ConfigItem>
         <!-- SslUseOwnCertificate: Yes or No, Yes will require a certificate+key pair file paths to be set by user -->
     <ConfigItem id="1001" name="SslUseOwnCertificate">Yes</ConfigItem> 
         <!-- SslVerifyPeerMode: Whether to verify server certificate: -->
@@ -64,7 +65,7 @@
         <!-- 3: Verify server certificate and hostname (server CA file path and hostname must be set by user) -->  
     <ConfigItem id="1002" name="SslVerifyPeerMode">0</ConfigItem>
         <!-- SslPeerHostNameMatchStr: Exact server host name to verify, used only when SslVerifyPeerMode is 2 or 3 -->
-    <ConfigItem id="1003" name="SslPeerHostNameMatchStr">*.local</ConfigItem>
+    <ConfigItem id="1003" name="SslPeerHostNameMatchStr">myserver.local</ConfigItem>
 
 
 
